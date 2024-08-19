@@ -29,6 +29,7 @@ public class Curriculum {
      * - 창의
      * - 필수_이수학점
      * - 교과과정
+     * - 대체과목
      */
 
     @Convert(converter = CoreJsonConverter.class)
@@ -51,13 +52,19 @@ public class Curriculum {
     @Column(columnDefinition = "TEXT")
     private CurriculumCodesJson curriculumCodesJson;
 
+    @Convert(converter = AlternativeCourseJsonConverter.class)
+    @Column(columnDefinition = "TEXT")
+    private AlternativeCourseJson alternativeCourseJson;
+
     @Builder
-    public Curriculum(CurriculumDecider decider, CoreJson coreJson, SwAiJson swAiJson, CreativityJson creativityJson, RequirementCreditJson requiredCreditJson, CurriculumCodesJson curriculumCodesJson) {
+    public Curriculum(CurriculumDecider decider, CoreJson coreJson, SwAiJson swAiJson, CreativityJson creativityJson, RequirementCreditJson requiredCreditJson, CurriculumCodesJson curriculumCodesJson, AlternativeCourseJson alternativeCourseJson) {
         this.decider = decider;
         this.coreJson = coreJson;
         this.swAiJson = swAiJson;
         this.creativityJson = creativityJson;
         this.requiredCreditJson = requiredCreditJson;
         this.curriculumCodesJson = curriculumCodesJson;
+        this.alternativeCourseJson = alternativeCourseJson;
     }
+
 }

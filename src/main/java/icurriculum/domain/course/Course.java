@@ -1,6 +1,5 @@
 package icurriculum.domain.course;
 
-import icurriculum.domain.course.alternative.AlternativeCourse;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -29,21 +27,11 @@ public class Course {
 
     private Integer credit;
 
-    @OneToMany(mappedBy = "course", cascade = ALL, orphanRemoval = true)
-    private List<AlternativeCourse> alternativeCourses = new ArrayList<>();
-
     @Builder
     public Course(String code, String name, Integer credit) {
         this.code = code;
         this.name = name;
         this.credit = credit;
-    }
-
-    /**
-     * 테스트용 삭제 예정
-     */
-    public void setAlternativeCourses(List<AlternativeCourse> alternativeCourses) {
-        this.alternativeCourses = alternativeCourses;
     }
 
     @Override
