@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: icurriculum
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/project/icurriculum
+    driver-class-name: org.h2.Driver
+    username: sa
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
