@@ -1,6 +1,6 @@
 package icurriculum.domain.graduation.processor.util;
 
-import icurriculum.domain.graduation.processor.config.ProcessorCategory;
+import icurriculum.domain.graduation.processor.ProcessorCategory;
 import icurriculum.domain.graduation.processor.Processor;
 
 import java.util.Map;

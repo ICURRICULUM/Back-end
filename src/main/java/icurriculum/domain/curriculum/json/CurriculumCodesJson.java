@@ -26,7 +26,7 @@ public class CurriculumCodesJson {
     @JsonProperty("교과과정")
     private Map<Category, Set<String>> codes;
 
-    public Set<String> findByCategory(Category category) {
+    public Set<String> findCodesByCategory(Category category) {
         validateCategory(category);
         return codes.get(category);
     }
@@ -37,7 +37,7 @@ public class CurriculumCodesJson {
         /**
          * Todo 예외 추후 정의
          */
-        throw new RuntimeException();
+        throw new RuntimeException("CurriculumCodesJson 에는 전공필수, 전공선택, 교양필수만 존재합니다.");
     }
 }
 

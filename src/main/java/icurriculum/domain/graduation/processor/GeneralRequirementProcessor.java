@@ -24,10 +24,10 @@ public class GeneralRequirementProcessor implements Processor<GeneralRequirement
 
     @Override
     public GeneralRequirementDto execute(GeneralRequirement requirement, List<Take> takes) {
-        List<Course> generalRequirementCourses = requirement.getGeneralRequirementCourses();
-        DepartmentName departmentName = requirement.getDepartmentName();
+        List<Course> generalRequirementCourses = requirement.generalRequirementCourses();
+        DepartmentName departmentName = requirement.departmentName();
 
         return generalRequirementStrategyMap.get(departmentName)
-                .execute(generalRequirementCourses, takes);
+                .execute(requirement, takes);
     }
 }

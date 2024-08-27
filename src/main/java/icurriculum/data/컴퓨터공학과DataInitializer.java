@@ -1,12 +1,12 @@
-package icurriculum;
+package icurriculum.data;
 
 import icurriculum.domain.course.Course;
-import icurriculum.domain.course.alternative.AlternativeCourse;
 import icurriculum.domain.course.repository.CourseRepository;
 import icurriculum.domain.curriculum.Curriculum;
 import icurriculum.domain.curriculum.CurriculumDecider;
 import icurriculum.domain.curriculum.json.*;
 import icurriculum.domain.curriculum.repository.CurriculumRepository;
+import icurriculum.domain.curriculum.util.MajorToDeciderConverter;
 import icurriculum.domain.department.Department;
 import icurriculum.domain.department.DepartmentName;
 import icurriculum.domain.department.repository.DepartmentRepository;
@@ -21,16 +21,14 @@ import icurriculum.domain.take.Take;
 import icurriculum.domain.take.repository.TakeRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 import static icurriculum.domain.membermajor.MajorType.주전공;
 import static icurriculum.domain.take.Category.*;
 
-@Component
 @RequiredArgsConstructor
-public class DataInitializer {
+public class 컴퓨터공학과DataInitializer {
 
     private static final Long testMemberId = 1L;
 
@@ -43,26 +41,29 @@ public class DataInitializer {
     private final CurriculumRepository curriculumRepository;
 
     /**
-     * 기본 데이터 추가
+     * 기본 데이터 추가 method
      */
-    @PostConstruct
     public void init() {
-        Department department = getTestDepartmentOnlyData();
+        Department department = getDepartmentData();
         departmentRepository.save(department);
 
-        Member member = getTestMemberOnlyData();
+        Member member = getMemberData();
         memberRepository.save(member);
 
-        MemberMajor memberMajor = getTestMemberMajorOnlyData(member, department);
+        MemberMajor memberMajor = MemberMajor.builder()
+                .majorType(주전공)
+                .department(department)
+                .member(member)
+                .build();
         memberMajorRepository.save(memberMajor);
 
-        List<Course> courses = getTestCoursesOnlyData(department);
+        List<Course> courses = getCoursesData(department);
         courseRepository.saveAll(courses);
 
-        List<Take> takes = getTakesOnlyData(member);
+        List<Take> takes = getTakesData(member);
         takeRepository.saveAll(takes);
 
-        Curriculum curriculum = getTestCurriculumData(memberMajor);
+        Curriculum curriculum = getCurriculumData(memberMajor);
         curriculumRepository.save(curriculum);
     }
 
@@ -70,13 +71,13 @@ public class DataInitializer {
         return testMemberId;
     }
 
-    public Department getTestDepartmentOnlyData() {
+    public Department getDepartmentData() {
         return Department.builder()
                 .name(DepartmentName.컴퓨터공학과)
                 .build();
     }
 
-    public Member getTestMemberOnlyData() {
+    public Member getMemberData() {
         return Member.builder()
                 .name("이승철")
                 .joinYear(19)
@@ -84,7 +85,15 @@ public class DataInitializer {
                 .build();
     }
 
-    public MemberMajor getTestMemberMajorOnlyData(Member member, Department department) {
+    public MemberMajor getMemberMajorData() {
+        return MemberMajor.builder()
+                .majorType(주전공)
+                .department(getDepartmentData())
+                .member(getMemberData())
+                .build();
+    }
+
+    public MemberMajor getMemberMajorData(Member member, Department department) {
         return MemberMajor.builder()
                 .majorType(주전공)
                 .department(department)
@@ -92,53 +101,19 @@ public class DataInitializer {
                 .build();
     }
 
-    public List<Course> getTestCoursesOnlyData(Department department) {
-        Course 의영 = Course.builder().code("GEB1107").name("의사소통 영어").credit(3).build();
-        Course 의영중급 = Course.builder().code("GEB1108").name("의사소통 영어: 중급").credit(3).build();
-        Course 의영고급 = Course.builder().code("GEB1109").name("의사소통 영어: 고급").credit(3).build();
-
-        AlternativeCourse 의영대체 = new AlternativeCourse(의영, 의영중급, department);
-        AlternativeCourse 의영중급대체 = new AlternativeCourse(의영, 의영고급, department);
-        AlternativeCourse 의영고급대체 = new AlternativeCourse(의영중급, 의영, department);
-
-        List<AlternativeCourse> alternativeCourses = Arrays.asList(의영대체);
-        List<AlternativeCourse> alternativeCourses2 = Arrays.asList(의영중급대체);
-        List<AlternativeCourse> alternativeCourses3 = Arrays.asList(의영고급대체);
-
-        의영.setAlternativeCourses(alternativeCourses);
-        의영중급.setAlternativeCourses(alternativeCourses2);
-        의영고급.setAlternativeCourses(alternativeCourses3);
-
-
-        Course LS = Course.builder().code("GEB1201").name("실용영어 L/S").credit(3).build();
-        Course RW = Course.builder().code("GEB1202").name("실용영어 R/W").credit(3).build();
-        Course 고대영 = Course.builder().code("GEB1203").name("고급대학영어").credit(3).build();
-
-        AlternativeCourse alternativeCourse7 = new AlternativeCourse(LS, RW, department);
-        AlternativeCourse alternativeCourse8 = new AlternativeCourse(LS, 고대영, department);
-        AlternativeCourse alternativeCourse9 = new AlternativeCourse(RW, LS, department);
-        AlternativeCourse alternativeCourse10 = new AlternativeCourse(RW, 고대영, department);
-        AlternativeCourse alternativeCourse11 = new AlternativeCourse(고대영, LS, department);
-        AlternativeCourse alternativeCourse12 = new AlternativeCourse(고대영, RW, department);
-        List<AlternativeCourse> alternativeCourses4 = Arrays.asList(alternativeCourse7, alternativeCourse8);
-        List<AlternativeCourse> alternativeCourses5 = Arrays.asList(alternativeCourse9, alternativeCourse10);
-        List<AlternativeCourse> alternativeCourses6 = Arrays.asList(alternativeCourse11, alternativeCourse12);
-        LS.setAlternativeCourses(alternativeCourses4);
-        RW.setAlternativeCourses(alternativeCourses5);
-        고대영.setAlternativeCourses(alternativeCourses6);
-
+    public List<Course> getCoursesData(Department department) {
         return Arrays.asList(
                 Course.builder().code("GEB1112").name("크로스오버 1 : 인간의 탐색").credit(2).build(),
                 Course.builder().code("GEB1114").name("크로스오버 3 : 사회의 탐색").credit(2).build(),
                 Course.builder().code("GEB1115").name("프로네시스 세미나 Ⅰ : 가치형성과 진로탐색").credit(1).build(),
                 Course.builder().code("GEB1124").name("이공계열 글쓰기와 토론").credit(3).build(),
                 Course.builder().code("GEB1131").name("생활한문").credit(1).build(),
-                의영,
-                의영중급,
-                의영고급,
-                LS,
-                RW,
-                고대영,
+                Course.builder().code("GEB1107").name("의사소통 영어").credit(3).build(),
+                Course.builder().code("GEB1108").name("의사소통 영어: 중급").credit(3).build(),
+                Course.builder().code("GEB1109").name("의사소통 영어: 고급").credit(3).build(),
+                Course.builder().code("GEB1201").name("실용영어 L/S").credit(3).build(),
+                Course.builder().code("GEB1202").name("실용영어 R/W").credit(3).build(),
+                Course.builder().code("GEB1203").name("고급대학영어").credit(3).build(),
                 Course.builder().code("ACE1204").name("생명과학").credit(4).build(),
                 Course.builder().code("ACE1312").name("이산수학").credit(3).build(),
                 Course.builder().code("ACE2101").name("공업수학 1").credit(3).build(),
@@ -231,7 +206,7 @@ public class DataInitializer {
         );
     }
 
-    public List<Take> getTakesOnlyData(Member member) {
+    public List<Take> getTakesData(Member member) {
         return Arrays.asList(
                 // 2019학년도 1학기
                 Take.builder().category(전공필수).takenYear("2019").takenSemester("1").course(courseRepository.findByCode("CSE1101").get()).member(member).build(),
@@ -302,39 +277,36 @@ public class DataInitializer {
         );
     }
 
-    public Curriculum getTestCurriculumData(MemberMajor memberMajor) {
-        CurriculumDecider decider = getTestCurriculumDecider(memberMajor);
+    public Curriculum getCurriculumData(MemberMajor memberMajor) {
+        CurriculumDecider decider = MajorToDeciderConverter.toDecider(memberMajor);
         return Curriculum.builder()
                 .decider(decider)
-                .coreJson(getTestCoreJson())
-                .swAiJson(getTestSwAiJson())
-                .creativityJson(getTestCreativityJson())
-                .requiredCreditJson(getTestRequirementCreditJson())
-                .curriculumCodesJson(getTestCurriculumCodesJson())
+                .coreJson(getCoreJsonData())
+                .swAiJson(getSwAiJsonData())
+                .creativityJson(getCreativityJsonData())
+                .requiredCreditJson(getRequirementCreditJsonData())
+                .curriculumCodesJson(getTestCurriculumCodesJsonData())
+                .alternativeCourseJson(getAlternativeCourseJsonData())
                 .build();
     }
 
-    private CurriculumDecider getTestCurriculumDecider(MemberMajor memberMajor) {
-        return CurriculumDecider.createCurriculumDecider(memberMajor);
+    public CoreJson getCoreJsonData() {
+        return new CoreJson(false, 9, Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap());
     }
 
-    public CoreJson getTestCoreJson() {
-        return new CoreJson(false, 9, new HashSet<>(), new HashMap<>());
+    public SwAiJson getSwAiJsonData() {
+        return new SwAiJson(false, Collections.emptySet(), Collections.emptySet(), 0);
     }
 
-    public SwAiJson getTestSwAiJson() {
-        return new SwAiJson(false, new HashSet<>(), 0);
+    public CreativityJson getCreativityJsonData() {
+        return new CreativityJson(false, Collections.emptySet(), 0);
     }
 
-    public CreativityJson getTestCreativityJson() {
-        return new CreativityJson(false, new HashSet<>(), 0);
-    }
-
-    public RequirementCreditJson getTestRequirementCreditJson() {
+    public RequirementCreditJson getRequirementCreditJsonData() {
         return new RequirementCreditJson(130, 65, 39, 21);
     }
 
-    public CurriculumCodesJson getTestCurriculumCodesJson() {
+    public CurriculumCodesJson getTestCurriculumCodesJsonData() {
         Map<Category, Set<String>> codes = new HashMap<>();
 
         codes.put(전공필수,
@@ -358,6 +330,14 @@ public class DataInitializer {
                 ));
 
         return new CurriculumCodesJson(codes);
+    }
+
+    public AlternativeCourseJson getAlternativeCourseJsonData() {
+        Map<String, Set<String>> alternativeCourseMap = new HashMap<>();
+        alternativeCourseMap.put("CSE2013", Set.of("CSE3209"));
+        alternativeCourseMap.put("CSE3209", Set.of("CSE2013"));
+
+        return new AlternativeCourseJson(alternativeCourseMap);
     }
 
 

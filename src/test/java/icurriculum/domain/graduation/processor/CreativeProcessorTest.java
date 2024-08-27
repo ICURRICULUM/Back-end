@@ -1,14 +1,12 @@
 package icurriculum.domain.graduation.processor;
 
-import icurriculum.DataInitializer;
+import icurriculum.data.컴퓨터공학과DataInitializer;
 import icurriculum.domain.curriculum.json.CreativityJson;
-import icurriculum.domain.curriculum.json.SwAiJson;
 import icurriculum.domain.graduation.processor.dto.ProcessorDto;
 import icurriculum.domain.member.Member;
 import icurriculum.domain.member.repository.MemberRepository;
 import icurriculum.domain.membermajor.MemberMajor;
 import icurriculum.domain.membermajor.repository.MemberMajorRepository;
-import icurriculum.domain.membermajor.util.MemberMajorUtils;
 import icurriculum.domain.take.Category;
 import icurriculum.domain.take.Take;
 import icurriculum.domain.take.repository.TakeRepository;
@@ -28,7 +26,7 @@ import java.util.List;
 class CreativeProcessorTest {
 
     @Autowired
-    DataInitializer dataInitializer;
+    컴퓨터공학과DataInitializer 컴퓨터공학과DataInitializer;
     @Autowired
     TakeRepository takeRepository;
     @Autowired
@@ -42,11 +40,10 @@ class CreativeProcessorTest {
 
     @BeforeEach
     void beforeEach() {
-        Long testMemberId = dataInitializer.getTestMemberId();
+        Long testMemberId = 컴퓨터공학과DataInitializer.getTestMemberId();
         Member testMember = memberRepository.findById(testMemberId).get();
         List<MemberMajor> memberMajors = memberMajorRepository.findByMember(testMember);
-        MemberMajor mainMemberMajor = MemberMajorUtils.getMainMemberMajor(memberMajors);
-        List<Take> takes = takeRepository.findByMemberAndDepartment(testMember, mainMemberMajor.getDepartment());
+        List<Take> takes = takeRepository.findByMember(testMember);
         creativityTakes = TakeUtils.getTakesByCategory(takes, Category.창의);
     }
 

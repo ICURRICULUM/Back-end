@@ -2,7 +2,6 @@ package icurriculum.domain.course.service;
 
 import icurriculum.domain.course.Course;
 import icurriculum.domain.course.repository.CourseRepository;
-import icurriculum.domain.department.Department;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +16,11 @@ public class CourseService {
 
     private final CourseRepository repository;
 
-    public List<Course> getCoursesByCodesAndDepartment(Set<String> codes, Department department) {
-        return repository.findByCodesAndDepartment(codes, department);
+    public List<Course> findCoursesByCodes(Set<String> codes) {
+        return repository.findByCodes(codes);
     }
 
-    public Course getCourseByCode(String code) {
+    public Course findCourseByCode(String code) {
         return repository.findByCode(code)
                 .orElseThrow(RuntimeException::new);
         /**

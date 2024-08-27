@@ -1,6 +1,5 @@
 package icurriculum.domain.membermajor.service;
 
-
 import icurriculum.domain.member.Member;
 import icurriculum.domain.membermajor.MemberMajor;
 import icurriculum.domain.membermajor.repository.MemberMajorRepository;
@@ -17,7 +16,7 @@ public class MemberMajorService {
 
     private final MemberMajorRepository repository;
 
-    public List<MemberMajor> getMemberMajorsByMember(Member member){
+    public List<MemberMajor> findMajorsByMember(Member member) {
         return repository.findByMember(member);
     }
 

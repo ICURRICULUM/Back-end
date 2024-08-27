@@ -1,4 +1,4 @@
-package icurriculum.domain.graduation.processor.config;
+package icurriculum.domain.graduation.processor;
 
 public enum ProcessorCategory {
 
@@ -8,6 +8,8 @@ public enum ProcessorCategory {
     SW_AI,
     창의,
     핵심교양,
-    교양필수
+    교양필수,
+    전공선택,
+    전공필수
 
 }

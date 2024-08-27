@@ -1,44 +1,82 @@
 package icurriculum.domain.membermajor.repository;
 
-import icurriculum.DataInitializer;
+import icurriculum.data.컴퓨터공학과DataInitializer;
 import icurriculum.domain.department.Department;
+import icurriculum.domain.department.repository.DepartmentRepository;
 import icurriculum.domain.member.Member;
+import icurriculum.domain.member.RoleType;
 import icurriculum.domain.member.repository.MemberRepository;
 import icurriculum.domain.membermajor.MemberMajor;
+import icurriculum.domain.membermajor.MajorType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@Import(컴퓨터공학과DataInitializer.class)
 class MemberMajorRepositoryTest {
 
     @Autowired
-    MemberRepository memberRepository;
+    private MemberMajorRepository memberMajorRepository;
+
     @Autowired
-    MemberMajorRepository memberMajorRepository;
+    private MemberRepository memberRepository;
+
     @Autowired
-    DataInitializer dataInitializer;
+    private DepartmentRepository departmentRepository;
 
-    @Test
-    @DisplayName("회원전공이_1개일때_회원별_전공상태리스트_조회_테스트")
-    public void findByMember() throws Exception {
-        // given
-        Member member = memberRepository.findById(dataInitializer.getTestMemberId()).get();
-        Department department = dataInitializer.getTestDepartmentOnlyData();
-        MemberMajor actualMemberMajor = dataInitializer.getTestMemberMajorOnlyData(member, department);
+    @Autowired
+    private 컴퓨터공학과DataInitializer 컴퓨터공학과DataInitializer;
 
-        // when
-        MemberMajor expectedMemberMajor = memberMajorRepository.findByMember(member).get(0);
+    Member member;
 
-        // then
-        assertThat(actualMemberMajor.getMajorType()).isEqualTo(expectedMemberMajor.getMajorType());
-        assertThat(actualMemberMajor.getDepartment().getName()).isEqualTo(expectedMemberMajor.getDepartment().getName());
+    @BeforeEach
+    void setUp() {
+        Department department = 컴퓨터공학과DataInitializer.getDepartmentData();
+        member = 컴퓨터공학과DataInitializer.getMemberData();
+        MemberMajor memberMajor = 컴퓨터공학과DataInitializer.getMemberMajorData(member, department);
+
+        departmentRepository.save(department);
+        memberRepository.save(member);
+        memberMajorRepository.save(memberMajor);
     }
 
+    @Test
+    @DisplayName("memberMajor가 있는 맴버, findByMember method 실행, MemberMajor List 정상 반환")
+    void findByMember_shouldReturnMemberMajorsForGivenMember() {
+        // when
+        List<MemberMajor> memberMajors = memberMajorRepository.findByMember(member);
 
+        // then
+        assertThat(memberMajors).isNotNull();
+        assertThat(memberMajors).hasSize(1);
+        assertThat(memberMajors.get(0).getMember()).isEqualTo(member);
+        assertThat(memberMajors.get(0).getMajorType()).isEqualTo(MajorType.주전공);
+    }
+
+    @Test
+    @DisplayName("memberMajor가 없는 맴버, findByMember method 실행, 비어있는 MemberMajor List 반환")
+    void findByMember_shouldReturnEmptyListForNonExistingMember() {
+        // given
+        Member nonExistingMember = Member.builder()
+                .name("nonExistingMember")
+                .joinYear(2021)
+                .role(RoleType.ROLE_USER)
+                .build();
+        memberRepository.save(nonExistingMember);
+
+        // when
+        List<MemberMajor> memberMajors = memberMajorRepository.findByMember(nonExistingMember);
+
+        // then
+        assertThat(memberMajors).isNotNull();
+        assertThat(memberMajors).isEmpty();
+    }
 }

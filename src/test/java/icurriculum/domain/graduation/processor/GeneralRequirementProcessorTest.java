@@ -1,6 +1,6 @@
 package icurriculum.domain.graduation.processor;
 
-import icurriculum.DataInitializer;
+import icurriculum.data.컴퓨터공학과DataInitializer;
 import icurriculum.domain.course.Course;
 import icurriculum.domain.course.repository.CourseRepository;
 import icurriculum.domain.course.service.CourseService;
@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static icurriculum.domain.department.DepartmentName.컴퓨터공학과;
 import static icurriculum.domain.take.util.TakeUtils.getTakesByCategory;
 
 @SpringBootTest
@@ -35,7 +36,7 @@ import static icurriculum.domain.take.util.TakeUtils.getTakesByCategory;
 class GeneralRequirementProcessorTest {
 
     @Autowired
-    DataInitializer dataInitializer;
+    컴퓨터공학과DataInitializer 컴퓨터공학과DataInitializer;
     @Autowired
     TakeRepository takeRepository;
     @Autowired
@@ -62,15 +63,15 @@ class GeneralRequirementProcessorTest {
     void beforeEach() {
         generalRequirementProcessor = new GeneralRequirementProcessor(generalRequirementStrategyMap);
 
-        Long testMemberId = dataInitializer.getTestMemberId();
+        Long testMemberId = 컴퓨터공학과DataInitializer.getTestMemberId();
         Member testMember = memberRepository.findById(testMemberId).get();
         List<MemberMajor> memberMajors = memberMajorRepository.findByMember(testMember);
-        MemberMajor mainMemberMajor = MemberMajorUtils.getMainMemberMajor(memberMajors);
+        MemberMajor mainMemberMajor = MemberMajorUtils.findMainMajor(memberMajors);
         department = mainMemberMajor.getDepartment();
-        List<Take> allTakes = takeRepository.findByMemberAndDepartment(testMember, department);
+        List<Take> allTakes = takeRepository.findByMember(testMember);
         takes = getTakesByCategory(allTakes, Category.교양필수);
 
-        curriculumCodesJson = dataInitializer.getTestCurriculumCodesJson();
+        curriculumCodesJson = 컴퓨터공학과DataInitializer.getTestCurriculumCodesJsonData();
     }
 
 
@@ -78,9 +79,9 @@ class GeneralRequirementProcessorTest {
     @DisplayName("교양필수 처리")
     public void execute() throws Exception {
         // given
-        Set<String> codes = curriculumCodesJson.findByCategory(Category.교양필수);
-        List<Course> generalRequirementCourses = courseService.getCoursesByCodesAndDepartment(codes, department);
-        GeneralRequirement generalRequirement = new GeneralRequirement(generalRequirementCourses, DepartmentName.컴퓨터공학과);
+        Set<String> codes = curriculumCodesJson.findCodesByCategory(Category.교양필수);
+        List<Course> generalRequirementCourses = courseService.findCoursesByCodes(codes);
+        GeneralRequirement generalRequirement = new GeneralRequirement(generalRequirementCourses, 컴퓨터공학과DataInitializer.getAlternativeCourseJsonData(), 컴퓨터공학과, 19);
 
         // when
         ProcessorDto.GeneralRequirementDto execute = generalRequirementProcessor.execute(generalRequirement, takes);

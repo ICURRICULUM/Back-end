@@ -1,117 +1,124 @@
 package icurriculum.domain.membermajor.util;
 
+import icurriculum.domain.department.Department;
+import icurriculum.domain.member.Member;
 import icurriculum.domain.membermajor.MemberMajor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static icurriculum.domain.membermajor.util.MemberMajorUtils.getExceptMainMemberMajor;
-import static icurriculum.domain.membermajor.util.MemberMajorUtils.getMainMemberMajor;
+import static icurriculum.domain.department.DepartmentName.컴퓨터공학과;
+import static icurriculum.domain.member.RoleType.ROLE_USER;
+import static icurriculum.domain.membermajor.MajorType.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-
-@ExtendWith(MockitoExtension.class)
 class MemberMajorUtilsTest {
 
-    @Mock
-    MemberMajor mainMajor;
-    @Mock
-    MemberMajor minorMajor;
+    private Member testMember;
+    private Department testDepartment;
 
-    @Mock
-    MemberMajor secondMajor;
+    @BeforeEach
+    void setUp() {
+        testDepartment = Department.builder()
+                .name(컴퓨터공학과)
+                .build();
 
-    @Test
-    @DisplayName("주전공만 있는 상태일때 주전공 정상 리턴")
-    public void getMainMemberMajor_주전공만포함상태() {
-        // given
-        when(mainMajor.isMain()).thenReturn(true);
-        List<MemberMajor> memberMajors = Arrays.asList(mainMajor);
-
-        // when
-        MemberMajor expected = getMainMemberMajor(memberMajors);
-
-        // then
-        assertThat(mainMajor).isEqualTo(expected);
+        testMember = Member.builder()
+                .name("이승철")
+                .joinYear(2019)
+                .role(ROLE_USER)
+                .build();
     }
 
     @Test
-    @DisplayName("주전공 포함한 상태일때 주전공 정상 리턴")
-    public void getMainMemberMajor_주전공포함상태() {
+    @DisplayName("주전공을 가진 MemberMajor를 올바르게 반환해야 한다.")
+    void findMainMajor_shouldReturnMainMajor() {
         // given
-        when(mainMajor.isMain()).thenReturn(true);
-        List<MemberMajor> memberMajors = Arrays.asList(mainMajor, minorMajor);
+        List<MemberMajor> memberMajors = List.of(
+                MemberMajor.builder()
+                        .majorType(주전공)
+                        .member(testMember)
+                        .department(testDepartment)
+                        .build(),
+                MemberMajor.builder()
+                        .majorType(복수전공)
+                        .member(testMember)
+                        .department(testDepartment)
+                        .build()
+        );
 
         // when
-        MemberMajor expected = getMainMemberMajor(memberMajors);
+        MemberMajor mainMajor = MemberMajorUtils.findMainMajor(memberMajors);
 
         // then
-        assertThat(mainMajor).isEqualTo(expected);
+        assertThat(mainMajor).isNotNull();
+        assertThat(mainMajor.getMajorType()).isEqualTo(주전공);
     }
 
     @Test
-    @DisplayName("주전공 미포함한 상태일때 에러 발생")
-    public void getMainMemberMajor_주전공미포함상태() {
+    @DisplayName("주전공이 없는 경우 예외를 발생시켜야 한다.")
+    void findMainMajor_shouldThrowExceptionWhenNoMainMajor() {
         // given
-        when(minorMajor.isMain()).thenReturn(false);
-        List<MemberMajor> memberMajors = Arrays.asList(minorMajor);
+        List<MemberMajor> memberMajors = List.of(
+                MemberMajor.builder()
+                        .majorType(복수전공)
+                        .member(testMember)
+                        .department(testDepartment)
+                        .build()
+        );
 
         // when & then
-        assertThrows(RuntimeException.class, () -> {
-            getMainMemberMajor(memberMajors);
-        });
+        assertThatThrownBy(() -> MemberMajorUtils.findMainMajor(memberMajors))
+                .isInstanceOf(RuntimeException.class);
     }
 
     @Test
-    @DisplayName("전공상태 empty 에러 발생")
-    public void getMainMemberMajor_empty상태() {
+    @DisplayName("주전공을 제외한 다른 전공들을 올바르게 반환해야 한다.")
+    void findOtherMajors_shouldReturnOtherMajors() {
         // given
-        List<MemberMajor> memberMajors = new ArrayList<>();
+        MemberMajor mainMajor = MemberMajor.builder()
+                .majorType(주전공)
+                .member(testMember)
+                .department(testDepartment)
+                .build();
 
-        // when & then
-        assertThrows(RuntimeException.class, () -> {
-            getMainMemberMajor(memberMajors);
-        });
-    }
+        MemberMajor secondMajor = MemberMajor.builder()
+                .majorType(복수전공)
+                .member(testMember)
+                .department(testDepartment)
+                .build();
 
-    @Test
-    @DisplayName("주전공 포함한 상태일때 주전공 아닌 데이터들 정상 리턴")
-    public void getExceptMainMemberMajor_주전공포함상태() {
-        // given
-        when(mainMajor.isMain()).thenReturn(true);
-        when(minorMajor.isMain()).thenReturn(false);
-        when(secondMajor.isMain()).thenReturn(false);
-        List<MemberMajor> memberMajors = Arrays.asList(mainMajor, minorMajor, secondMajor);
+        List<MemberMajor> memberMajors = List.of(mainMajor, secondMajor);
 
         // when
-        List<MemberMajor> exceptMainMemberMajors = getExceptMainMemberMajor(memberMajors);
+        List<MemberMajor> otherMajors = MemberMajorUtils.findOtherMajors(memberMajors);
 
         // then
-        assertThat(exceptMainMemberMajors.size()).isEqualTo(2);
-        assertThat(exceptMainMemberMajors).doesNotContain(mainMajor);
-        assertThat(exceptMainMemberMajors).contains(minorMajor);
-        assertThat(exceptMainMemberMajors).contains(secondMajor);
+        assertThat(otherMajors).isNotNull();
+        assertThat(otherMajors).hasSize(1);
+        assertThat(otherMajors.get(0).getMajorType()).isNotEqualTo(주전공);
     }
 
     @Test
-    @DisplayName("주전공만 있는 경우 비어있는 List 반환")
-    public void getExceptMainMemberMajor_empty상태() {
+    @DisplayName("단일 전공인 경우 빈 리스트를 반환해야 한다.")
+    void findOtherMajors_shouldReturnEmptyListForSingleMajor() {
         // given
-        when(mainMajor.isMain()).thenReturn(true);
-        List<MemberMajor> memberMajors = Arrays.asList(mainMajor);
+        MemberMajor mainMajor = MemberMajor.builder()
+                .majorType(주전공)
+                .member(testMember)
+                .department(testDepartment)
+                .build();
+
+        List<MemberMajor> memberMajors = List.of(mainMajor);
 
         // when
-        List<MemberMajor> exceptMainMemberMajors = getExceptMainMemberMajor(memberMajors);
+        List<MemberMajor> otherMajors = MemberMajorUtils.findOtherMajors(memberMajors);
 
         // then
-        assertThat(exceptMainMemberMajors).isEmpty();
+        assertThat(otherMajors).isNotNull();
+        assertThat(otherMajors).isEmpty();
     }
 }
