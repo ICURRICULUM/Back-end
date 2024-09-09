@@ -58,7 +58,7 @@ main  -> 실제 운영할 서버로 배포, release에서 QA 후 main으로 merg
 
 ### 구글의 Java 스타일 기반으로 Code Style 구성
 
-[intellij-java-google-style.xml](https://prod-files-secure.s3.us-west-2.amazonaws.com/0c69a890-5de7-48c1-b7e4-d54ed76f7022/40dcb948-78f2-42fd-a243-4aa32dca53b6/intellij-java-google-style.xml)
+[intellij-java-google-style.xml](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml)
 
 [[IntelliJ] Code Style(Google Style) 적용하기](https://tychejin.tistory.com/334)
 
@@ -130,13 +130,12 @@ if (condition) {
 public class MemberResponseDTO {
     @Getter
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class MemberInfoDTO {
-        private String name;
-        private String nickname;
-        private String gender;
-        private String birthday;
+        private final String name;
+        private final String nickname;
+        private final String gender;
+        private final String birthday;
     }
 }
 ```
