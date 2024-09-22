@@ -21,6 +21,7 @@
 
   <label for="departmentName">학과 이름:</label>
   <select id="departmentName" name="departmentName">
+    <!--배열 통해서 모든 학과 나타낼 수 있게 수정해보겠음-->
     <option value="컴퓨터공학과">컴퓨터공학과</option>
     <option value="전자공학과">전자공학과</option>
     <option value="기계공학과">기계공학과</option>
@@ -59,6 +60,10 @@
 
   <label for="curriculumData">커리큘럼 데이터 (JSON)</label><br>
   <textarea id="curriculumData" name="curriculumData" rows="10" cols="50"></textarea><br><br>
+
+  <!-- JSON 파일 업로드 필드 추가 -->
+  <label for="jsonFile">JSON 파일 업로드</label><br>
+  <input type="file" id="jsonFile" accept=".json" onchange="loadJsonFile()"><br><br>
 
 
   <button type="submit">커리큘럼 등록하기</button>
@@ -330,6 +335,23 @@
     }
 
     return true;
+  }
+  function loadJsonFile() {
+    const fileInput = document.getElementById('jsonFile');
+    const file = fileInput.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        try {
+          const jsonData = JSON.parse(event.target.result);  // 파일 내용을 JSON으로 파싱
+          document.getElementById('curriculumData').value = JSON.stringify(jsonData, null, 2);  // 포맷된 JSON 데이터를 텍스트 영역에 표시
+        } catch (e) {
+          alert('업로드된 파일이 올바른 JSON 형식이 아닙니다.');
+        }
+      };
+      reader.readAsText(file);
+    }
   }
 
 </script>
