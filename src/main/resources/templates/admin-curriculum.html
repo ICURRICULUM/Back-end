@@ -383,6 +383,103 @@
       alert('모든 필수 항목을 채워주세요.');
     }
   }
+
+  //커리큘럼 수정 함수
+  function saveChanges(event) {
+    event.preventDefault();  // 기본 동작 중단
+    const majorType = document.getElementById('majorType').value;
+    const departmentName = document.getElementById('departmentName').value;
+    const joinYear = document.getElementById('joinYear').value;
+
+    const inputs = document.querySelectorAll('#curriculum-result input[data-field]');
+    let updatedData = {};
+
+    inputs.forEach(input => {
+      const field = input.getAttribute('data-field').split('.');
+      let currentObj = updatedData;
+
+      for (let i = 0; i < field.length - 1; i++) {
+        if (!currentObj[field[i]]) {
+          currentObj[field[i]] = {};
+        }
+        currentObj = currentObj[field[i]];
+      }
+
+      let value = input.type === 'checkbox' ? input.checked : input.value;
+      const fieldName = field[field.length - 1];
+
+      if (fieldName === '전공필수' || fieldName === '전공선택' || fieldName === '교양필수' || fieldName === '필수영역' || fieldName === '지정과목' || fieldName === '대체과목') {
+        value = value ? value.split(',').map(item => item.trim()) : [];
+      } else if (fieldName === '영역별_지정과목' || fieldName === '영역별_대체과목') {
+        try {
+          value = JSON.parse(value);
+        } catch (e) {
+          alert(`${fieldName}의 값이 올바른 JSON 형식이 아닙니다.`);
+          return;
+        }
+      }
+
+      currentObj[fieldName] = value;
+    });
+
+    // alternativeCourseJson.alternativeCourseMap 처리
+    let alternativeCourseMap = {};
+    document.querySelectorAll('[data-field^="alternativeCourseJson.alternativeCourseMap"]').forEach(input => {
+      // 필드명에서 과목 코드(키)를 추출
+      const courseKey = input.getAttribute('data-field').split('.').pop();  // 가장 마지막 요소로 과목 코드 추출
+
+      // 입력값을 배열로 변환
+      const courseValues = input.value.split(',').map(item => item.trim());
+
+      // alternativeCourseMap 객체에 키-값 쌍을 추가
+      if (courseKey) {
+        if (courseValues.length === 1 && courseValues[0] === "") {
+          alternativeCourseMap[courseKey] = [];  // 빈 입력은 빈 배열로 처리
+        } else {
+          alternativeCourseMap[courseKey] = courseValues;
+        }
+      }
+    });
+
+// JSON 객체에 alternativeCourseJson.alternativeCourseMap 추가
+    if (!updatedData.alternativeCourseJson) {
+      updatedData.alternativeCourseJson = {};
+    }
+    updatedData.alternativeCourseJson.alternativeCourseMap = alternativeCourseMap;
+
+    console.log('Updated Data:', JSON.stringify(updatedData, null, 2));
+
+    fetch(`/admin/curriculum/save?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedData)
+    })
+            .then(response => response.text())
+            .then(result => {
+              if (result === "duplicate") {
+                if (confirm("같은 데이터가 이미 존재합니다. 덮어씌우시겠습니까?")) {
+                  fetch(`/admin/curriculum/overwrite?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedData)
+                  })
+                          .then(overwriteResponse => overwriteResponse.text())
+                          .then(overwriteResult => {
+                            alert(overwriteResult);
+                          });
+                }
+              } else if (result === "not_found") {
+                alert("데이터가 존재하지 않습니다. 커리큘럼 데이터 저장 화면을 이용하세요.");
+              } else {
+                alert(result);
+              }
+            })
+            .catch(error => console.error('Error:', error));
+  }
 </script>
 
 </body>
