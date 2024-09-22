@@ -37,6 +37,32 @@
   <!-- 조회된 커리큘럼 정보가 여기 표시됩니다 -->
 </div>
 <br>
+<h2>새로운 Curriculum 등록하기</h2>
+<form id="curriculum-add-form" onsubmit="saveCurriculum(); return false;">
+  <label for="newMajorType">전공 상태</label>
+  <select id="newMajorType" name="majorType">
+    <option value="주전공">주전공</option>
+    <option value="부전공">부전공</option>
+  </select><br><br>
+
+  <label for="newDepartmentName">학과 이름</label>
+  <select id="newDepartmentName" name="departmentName">
+    <option value="컴퓨터공학과">컴퓨터공학과</option>
+    <option value="전자공학과">전자공학과</option>
+    <option value="기계공학과">기계공학과</option>
+    <option value="전기공학과">전기공학과</option>
+
+  </select><br><br>
+
+  <label for="newJoinYear">기준 년도</label>
+  <input type="number" id="newJoinYear" name="joinYear" required><br><br>
+
+  <label for="curriculumData">커리큘럼 데이터 (JSON)</label><br>
+  <textarea id="curriculumData" name="curriculumData" rows="10" cols="50"></textarea><br><br>
+
+
+  <button type="submit">커리큘럼 등록하기</button>
+</form>
 
 <script>
   function loadCurriculum() {
@@ -186,6 +212,126 @@
                 </tr>`;
     }
   }
+
+  function saveCurriculum() {
+    const majorType = document.getElementById('newMajorType').value;
+    const departmentName = document.getElementById('newDepartmentName').value;
+    const joinYear = document.getElementById('newJoinYear').value;
+    const curriculumData = document.getElementById('curriculumData').value;
+
+    if (majorType && departmentName && joinYear && curriculumData) {
+      try {
+        const parsedData = JSON.parse(curriculumData);
+
+        const isValid = validateJsonStructure(parsedData);
+        if (!isValid) {
+          alert('JSON 형식을 맞추세요.');
+          return;
+        }
+
+        const isDataValid = validateJsonContent(parsedData);
+        if (!isDataValid) {
+          alert('비어있거나 잘못된 데이터가 포함되어 있습니다. 데이터를 확인해주세요.');
+          return;
+        }
+
+        fetch(`/admin/curriculum/save?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: curriculumData
+        })
+                .then(response => response.text())
+                .then(data => {
+                  alert(data);
+                })
+                .catch(error => console.error('Error:', error));
+
+      } catch (error) {
+        alert('올바른 JSON 형식이 아닙니다.');
+      }
+    } else {
+      alert('모든 영역을 채우세요.');
+    }
+  }
+
+  // JSON 구조 유효성 검사 함수
+  function validateJsonStructure(data) {
+    const expectedStructure = {
+      alternativeCourseJson: { alternativeCourseMap: {} },
+      coreJson: {
+        영역_지정여부: false,
+        요구학점: 0,
+        필수영역: [],
+        영역별_지정과목: {},
+        영역별_대체과목: {}
+      },
+      swAiJson: {
+        과목_지정여부: false,
+        지정과목: [],
+        대체과목: [],
+        요구학점: 0
+      },
+      creativityJson: {
+        과목_지정여부: false,
+        지정과목: [],
+        요구학점: 0
+      },
+      requiredCreditJson: {
+        총이수: 0,
+        단일전공: 0,
+        복수_연계_융합_전공: 0,
+        부전공: 0
+      },
+      curriculumCodesJson: {
+        교과과정: {
+          전공필수: [],
+          전공선택: [],
+          교양필수: []
+        }
+      }
+    };
+
+    return compareStructures(expectedStructure, data);
+  }
+  function compareStructures(expected, actual) {
+    if (typeof expected !== typeof actual) return false;
+
+    if (typeof expected === 'object' && !Array.isArray(expected)) {
+      for (const key in expected) {
+        if (!(key in actual)) return false;
+        if (!compareStructures(expected[key], actual[key])) return false;
+      }
+    } else if (Array.isArray(expected)) {
+      if (!Array.isArray(actual)) return false;
+    }
+
+    return true;
+  }
+  // JSON 내용 유효성 검사 함수
+  function validateJsonContent(data) {
+    // 'requiredCreditJson'의 값 확인
+    if (data.requiredCreditJson.총이수 <= 0) return false;
+
+    // 'curriculumCodesJson'에 최소한 하나의 항목이 있어야 함
+    const curriculumCodes = data.curriculumCodesJson.교과과정;
+    if (
+            !Array.isArray(curriculumCodes.전공필수) || curriculumCodes.전공필수.length === 0 ||
+            !Array.isArray(curriculumCodes.전공선택) || curriculumCodes.전공선택.length === 0 ||
+            !Array.isArray(curriculumCodes.교양필수) || curriculumCodes.교양필수.length === 0
+    ) {
+      return false;
+    }
+
+    // 'coreJson'에 필수영역이 있어야 함
+    if (!Array.isArray(data.coreJson.필수영역) || data.coreJson.필수영역.length === 0) {
+      return false;
+    }
+
+    return true;
+  }
+
 </script>
 
 </body>
