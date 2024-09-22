@@ -480,6 +480,27 @@
             })
             .catch(error => console.error('Error:', error));
   }
+  function deleteCurriculum() {
+    const majorType = document.getElementById('majorType').value;
+    const departmentName = document.getElementById('departmentName').value;
+    const joinYear = document.getElementById('joinYear').value;
+
+    if (majorType && departmentName && joinYear) {
+      if (confirm("정말로 이 커리큘럼을 삭제하시겠습니까?")) {
+        fetch(`/admin/curriculum/delete?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
+          method: 'DELETE',
+        })
+                .then(response => response.text())
+                .then(result => {
+                  alert(result);
+                  document.getElementById('curriculum-result').innerHTML = ''; // 삭제 후 화면 초기화
+                })
+                .catch(error => console.error('Error:', error));
+      }
+    } else {
+      alert('전공 상태, 학과 이름, 그리고 기준 년도를 모두 입력해주세요.');
+    }
+  }
 </script>
 
 </body>
