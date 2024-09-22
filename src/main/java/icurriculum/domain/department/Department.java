@@ -1,5 +1,6 @@
 package icurriculum.domain.department;
 
+import icurriculum.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-public class Department {
+public class Department extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -22,7 +23,7 @@ public class Department {
     private Long id;
 
     @Enumerated(STRING)
-    @Column(name = "department_name")
+    @Column(name = "department_name", nullable = false, unique = true)
     private DepartmentName name;
 
     @Builder
@@ -32,8 +33,12 @@ public class Department {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Department that = (Department) o;
         return Objects.equals(getId(), that.getId()) && getName() == that.getName();
     }

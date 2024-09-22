@@ -1,60 +1,67 @@
 package icurriculum.domain.membermajor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import icurriculum.domain.department.Department;
+import icurriculum.domain.department.DepartmentName;
 import icurriculum.domain.member.Member;
+import icurriculum.domain.member.RoleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static icurriculum.domain.department.DepartmentName.컴퓨터공학과;
-import static icurriculum.domain.member.RoleType.ROLE_USER;
-import static icurriculum.domain.membermajor.MajorType.주전공;
-import static org.assertj.core.api.Assertions.assertThat;
-
 class MemberMajorTest {
 
-    private Department department;
-    private Member member;
+    private Member testMember;
+    private Department testDepartment;
 
     @BeforeEach
     void setUp() {
-        department = Department.builder()
-                .name(컴퓨터공학과)
-                .build();
+        testMember = Member.builder()
+            .name("이승철")
+            .joinYear(19)
+            .role(RoleType.ROLE_USER)
+            .build();
 
-        member = Member.builder()
-                .name("이승철")
-                .joinYear(2019)
-                .role(ROLE_USER)
-                .build();
+        testDepartment = Department.builder()
+            .name(DepartmentName.컴퓨터공학과)
+            .build();
     }
 
     @Test
-    @DisplayName("주전공 일 때, isMain method가 True 반환")
-    void memberMajorShouldBeMain_WhenMajorTypeIsMain() {
+    @DisplayName("MemberMajor 객체가 정상적으로 생성되는지 테스트")
+    void memberMajor_객체_생성_테스트() {
         // given
         MemberMajor memberMajor = MemberMajor.builder()
-                .majorType(주전공)
-                .department(department)
-                .member(member)
-                .build();
+            .majorType(MajorType.주전공)
+            .department(testDepartment)
+            .member(testMember)
+            .build();
 
         // when & then
-        assertThat(memberMajor.isMain()).isTrue();
+        assertThat(memberMajor.getMajorType()).isEqualTo(MajorType.주전공);
+        assertThat(memberMajor.getDepartment()).isEqualTo(testDepartment);
+        assertThat(memberMajor.getMember()).isEqualTo(testMember);
     }
 
     @Test
-    @DisplayName("주전공 아닐 때, isMain method가 False 반환")
-    void memberMajorShouldNotBeMain_WhenMajorTypeIsNotMain() {
+    @DisplayName("주전공 여부를 확인하는 isMain 메소드 테스트")
+    void 주전공_여부_확인_테스트() {
         // given
-        MemberMajor memberMajor = MemberMajor.builder()
-                .majorType(MajorType.복수전공)
-                .department(department)
-                .member(member)
-                .build();
+        MemberMajor mainMajor = MemberMajor.builder()
+            .majorType(MajorType.주전공)
+            .department(testDepartment)
+            .member(testMember)
+            .build();
+
+        MemberMajor minorMajor = MemberMajor.builder()
+            .majorType(MajorType.부전공)
+            .department(testDepartment)
+            .member(testMember)
+            .build();
 
         // when & then
-        assertThat(memberMajor.isMain()).isFalse();
+        assertThat(mainMajor.isMain()).isTrue();
+        assertThat(minorMajor.isMain()).isFalse();
     }
 }
-

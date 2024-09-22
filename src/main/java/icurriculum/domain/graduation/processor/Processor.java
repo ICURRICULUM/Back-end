@@ -1,10 +1,10 @@
 package icurriculum.domain.graduation.processor;
 
 import icurriculum.domain.take.Take;
-
-import java.util.List;
+import java.util.LinkedList;
 
 public interface Processor<T, R> {
-    R execute(T requirement, List<Take> takes);
+
+    R execute(T request, LinkedList<Take> allTakeList);
 
 }

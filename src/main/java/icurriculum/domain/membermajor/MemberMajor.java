@@ -1,5 +1,6 @@
 package icurriculum.domain.membermajor;
 
+import icurriculum.domain.common.BaseTimeEntity;
 import icurriculum.domain.department.Department;
 import icurriculum.domain.member.Member;
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Getter
-public class MemberMajor {
+public class MemberMajor extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -27,14 +28,15 @@ public class MemberMajor {
     private Long id;
 
     @Enumerated(STRING)
+    @Column(nullable = false)
     private MajorType majorType;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Builder
@@ -45,7 +47,7 @@ public class MemberMajor {
     }
 
     /**
-     * 주전공 확인
+     * 비즈니스 method 주전공 확인
      */
     public boolean isMain() {
         return this.majorType == 주전공;

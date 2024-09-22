@@ -1,0 +1,24 @@
+package icurriculum.global.response.exception;
+
+import icurriculum.global.response.status.ErrorStatus;
+import lombok.Getter;
+
+@Getter
+public class GeneralException extends RuntimeException {
+
+    private final ErrorStatus errorStatus;
+    private final Object data;
+
+    public GeneralException(ErrorStatus errorStatus) {
+        super(errorStatus.getMessage());
+        this.errorStatus = errorStatus;
+        this.data = null;
+    }
+
+    public GeneralException(ErrorStatus errorStatus, Object data) {
+        super(errorStatus.getMessage());
+        this.errorStatus = errorStatus;
+        this.data = data;
+    }
+
+}

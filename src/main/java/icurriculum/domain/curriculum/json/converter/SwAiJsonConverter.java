@@ -5,6 +5,7 @@ import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class SwAiJsonConverter extends JsonConverter<SwAiJson> {
+
     public SwAiJsonConverter() {
         super(SwAiJson.class);
     }

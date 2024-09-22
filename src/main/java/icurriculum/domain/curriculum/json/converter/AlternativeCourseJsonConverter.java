@@ -1,12 +1,13 @@
 package icurriculum.domain.curriculum.json.converter;
 
-import icurriculum.domain.curriculum.json.AlternativeCourseJson;
+import icurriculum.domain.curriculum.json.AlternativeCoursesJson;
 import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
-public class AlternativeCourseJsonConverter extends JsonConverter<AlternativeCourseJson> {
+public class AlternativeCourseJsonConverter extends JsonConverter<AlternativeCoursesJson> {
+
     public AlternativeCourseJsonConverter() {
-        super(AlternativeCourseJson.class);
+        super(AlternativeCoursesJson.class);
     }
 
 }

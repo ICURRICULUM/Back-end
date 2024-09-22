@@ -1,21 +1,32 @@
 package icurriculum.domain.take;
 
-import icurriculum.domain.course.Course;
-import icurriculum.domain.member.Member;
-import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import static icurriculum.domain.course.util.CourseUtils.convertCustomToCourse;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import icurriculum.domain.common.BaseTimeEntity;
+import icurriculum.domain.course.Course;
+import icurriculum.domain.member.Member;
+import icurriculum.domain.membermajor.MajorType;
+import icurriculum.global.response.exception.GeneralException;
+import icurriculum.global.response.status.ErrorStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import java.util.Objects;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class Take {
+public class Take extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -24,6 +35,7 @@ public class Take {
 
     @Getter
     @Enumerated(STRING)
+    @Column(nullable = false)
     private Category category;
 
     private String takenYear;
@@ -31,47 +43,65 @@ public class Take {
     private String takenSemester;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     @Getter
     private Member member;
 
     /**
-     * 사용자가 custom 한 과목일 경우가 있다.
-     * custom 과목은 Course 가 비어있을 수 있음
-     * NullPointException 주의
+     * Course Table 에 존재하는 Take nullable
      */
-
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "course_id", nullable = true)
     private Course course;
 
     /**
-     * 사용자가 직접 custom 입력한 경우
-     * ex. 현장실습-16학점-전공필수
+     * 사용자가 직접 custom 입력한 Take
      */
     @Embedded
     private CustomCourse customCourse;
 
-    @Builder
-    public Take(Category category, String takenYear, String takenSemester, Member member, Course course, CustomCourse customCourse) {
-        /**
-         * Todo 예외 추후 정의
-         * Course 또는 CustomCourse 중 하나만 채워져 있어야 한다.
-         */
-        if ((course == null && customCourse == null) || (course != null && customCourse != null)) {
-            throw new RuntimeException();
-        }
+    /**
+     * 사용자가 어떤 상태의 전공으로 들은 수업인지 분류
+     */
+    @Getter
+    @Enumerated(STRING)
+    @Column(nullable = false)
+    private MajorType majorType;
 
+    /**
+     * 객체 생성 시 valid 로직 수행
+     */
+
+    @Builder
+    public Take(Category category, String takenYear, String takenSemester, Member member,
+        Course course, CustomCourse customCourse, MajorType majorType) {
         this.category = category;
         this.takenYear = takenYear;
         this.takenSemester = takenSemester;
         this.member = member;
         this.course = course;
         this.customCourse = customCourse;
+        this.majorType = majorType;
+
+        checkValidTake();
     }
 
     /**
-     * Todo 예외 추후 정의
+     * 비즈니스 메소드
+     * - checkValidTake
+     * - getEffectiveCourse
+     */
+
+    /**
+     * Course 또는 CustomCourse 중 하나만 채워져 있어야 한다.
+     */
+    private void checkValidTake() {
+        if ((course == null && customCourse == null) || (course != null && customCourse != null)) {
+            throw new GeneralException(ErrorStatus.TAKE_HAS_ABNORMAL_COURSE);
+        }
+    }
+
+    /**
      * Take 에서 Course 를 가져올 때 해당 메소드를 사용
      */
     public Course getEffectiveCourse() {
@@ -79,33 +109,47 @@ public class Take {
             return course;
         }
         if (customCourse != null) {
-            return convertCustomToCourse(customCourse);
+            return new Course(
+                customCourse.getCode(),
+                customCourse.getName(),
+                customCourse.getCredit()
+            );
         }
-        throw new RuntimeException();
+        throw new GeneralException(ErrorStatus.TAKE_HAS_ABNORMAL_COURSE);
     }
 
-    public Take modifyCategory(Category newCategory) {
-        return Take.builder()
-                .category(newCategory)
-                .takenYear(this.takenYear)
-                .takenSemester(this.takenSemester)
-                .member(this.member)
-                .course(this.course)
-                .customCourse(this.customCourse)
-                .build();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Take take = (Take) o;
+        return Objects.equals(id, take.id) && getCategory() == take.getCategory() && Objects.equals(
+            takenYear, take.takenYear) && Objects.equals(takenSemester, take.takenSemester)
+            && Objects.equals(getMember(), take.getMember()) && Objects.equals(getEffectiveCourse(),
+            take.getEffectiveCourse());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, getCategory(), takenYear, takenSemester, getMember(),
+            getEffectiveCourse());
     }
 
     @Override
     public String toString() {
         return "Take{" +
-                "id=" + id +
-                ", category=" + category +
-                ", takenYear='" + takenYear + '\'' +
-                ", takenSemester='" + takenSemester + '\'' +
-                ", member=" + member +
-                ", course=" + course +
-                ", customCourse=" + customCourse +
-                '}';
+            "id=" + id +
+            ", category=" + category +
+            ", takenYear='" + takenYear + '\'' +
+            ", takenSemester='" + takenSemester + '\'' +
+            ", member=" + member +
+            ", course=" + course +
+            ", customCourse=" + customCourse +
+            ", majorType=" + majorType +
+            '}';
     }
-
 }

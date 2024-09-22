@@ -5,6 +5,7 @@ import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class CurriculumCodesJsonConverter extends JsonConverter<CurriculumCodesJson> {
+
     public CurriculumCodesJsonConverter() {
         super(CurriculumCodesJson.class);
     }

@@ -1,27 +1,31 @@
 package icurriculum.domain.member;
 
+import icurriculum.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
-@Getter
-@NoArgsConstructor(access = PROTECTED)
 @Entity
-public class Member {
+@NoArgsConstructor(access = PROTECTED)
+@Getter
+@ToString
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "member_name")
+    @Column(name = "member_name", nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private Integer joinYear;
 
     @Enumerated(STRING)
@@ -34,13 +38,4 @@ public class Member {
         this.role = role;
     }
 
-    @Override
-    public String toString() {
-        return "Member{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", joinYear=" + joinYear +
-                ", role=" + role +
-                '}';
-    }
 }

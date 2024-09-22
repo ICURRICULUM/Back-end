@@ -1,26 +1,23 @@
 package icurriculum.domain.membermajor.repository;
 
-import icurriculum.data.컴퓨터공학과DataInitializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import icurriculum.data.TestDataInitializer;
 import icurriculum.domain.department.Department;
 import icurriculum.domain.department.repository.DepartmentRepository;
 import icurriculum.domain.member.Member;
-import icurriculum.domain.member.RoleType;
 import icurriculum.domain.member.repository.MemberRepository;
-import icurriculum.domain.membermajor.MemberMajor;
 import icurriculum.domain.membermajor.MajorType;
+import icurriculum.domain.membermajor.MemberMajor;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(컴퓨터공학과DataInitializer.class)
 class MemberMajorRepositoryTest {
 
     @Autowired
@@ -32,51 +29,45 @@ class MemberMajorRepositoryTest {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    @Autowired
-    private 컴퓨터공학과DataInitializer 컴퓨터공학과DataInitializer;
+    private TestDataInitializer testDataInitializer;
 
-    Member member;
+    private Member testMember;
+    private Department department;
+    private List<MemberMajor> testMemberMajorList;
 
     @BeforeEach
     void setUp() {
-        Department department = 컴퓨터공학과DataInitializer.getDepartmentData();
-        member = 컴퓨터공학과DataInitializer.getMemberData();
-        MemberMajor memberMajor = 컴퓨터공학과DataInitializer.getMemberMajorData(member, department);
-
-        departmentRepository.save(department);
-        memberRepository.save(member);
-        memberMajorRepository.save(memberMajor);
+        // TestDataInitializer 초기화 및 테스트 데이터 생성
+        testDataInitializer = new TestDataInitializer(memberRepository, departmentRepository,
+            memberMajorRepository);
+        testMember = testDataInitializer.initMemberData();
+        department = testDataInitializer.initDepartmentData();
+        testMemberMajorList = testDataInitializer.initMemberMajorData();
     }
 
     @Test
-    @DisplayName("memberMajor가 있는 맴버, findByMember method 실행, MemberMajor List 정상 반환")
-    void findByMember_shouldReturnMemberMajorsForGivenMember() {
+    @DisplayName("Member로 MemberMajor 리스트를 조회하는 테스트")
+    void 멤버로_전공_리스트_조회_테스트() {
         // when
-        List<MemberMajor> memberMajors = memberMajorRepository.findByMember(member);
+        List<MemberMajor> findMemberMajorList = memberMajorRepository.findByMember(testMember);
 
         // then
-        assertThat(memberMajors).isNotNull();
-        assertThat(memberMajors).hasSize(1);
-        assertThat(memberMajors.get(0).getMember()).isEqualTo(member);
-        assertThat(memberMajors.get(0).getMajorType()).isEqualTo(MajorType.주전공);
+        assertThat(findMemberMajorList).hasSameSizeAs(testMemberMajorList)
+            .containsExactlyInAnyOrderElementsOf(testMemberMajorList);
     }
 
     @Test
-    @DisplayName("memberMajor가 없는 맴버, findByMember method 실행, 비어있는 MemberMajor List 반환")
-    void findByMember_shouldReturnEmptyListForNonExistingMember() {
+    @DisplayName("Member와 MajorType으로 MemberMajor 조회하는 테스트")
+    void 멤버와_전공으로_조회_테스트() {
         // given
-        Member nonExistingMember = Member.builder()
-                .name("nonExistingMember")
-                .joinYear(2021)
-                .role(RoleType.ROLE_USER)
-                .build();
-        memberRepository.save(nonExistingMember);
+        MajorType majorType = MajorType.주전공;
 
         // when
-        List<MemberMajor> memberMajors = memberMajorRepository.findByMember(nonExistingMember);
+        Optional<MemberMajor> findMemberMajor = memberMajorRepository.findByMemberAndMajorType(
+            testMember, majorType);
 
         // then
-        assertThat(memberMajors).isNotNull();
-        assertThat(memberMajors).isEmpty();
+        assertThat(findMemberMajor).isPresent();
+        assertThat(findMemberMajor.get()).isEqualTo(testMemberMajorList.get(0));
     }
 }
