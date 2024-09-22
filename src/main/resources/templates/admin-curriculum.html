@@ -65,6 +65,8 @@
   <label for="jsonFile">JSON 파일 업로드</label><br>
   <input type="file" id="jsonFile" accept=".json" onchange="loadJsonFile()"><br><br>
 
+  <!-- 크롤링 API 호출 버튼 추가 -->
+  <button id="jsonCrawler" type="button" onclick="loadJsonCrawler()">크롤링 API 호출</button><br><br>
 
   <button type="submit">커리큘럼 등록하기</button>
 </form>
@@ -354,6 +356,33 @@
     }
   }
 
+  function loadJsonCrawler() {
+    const departmentName = document.getElementById('newDepartmentName').value;
+    const joinYear = document.getElementById('newJoinYear').value;
+
+    if (departmentName && joinYear) {
+      // 람다 url 주소 뺐음, 나중에 yml 에 등록후 갱신 하겠음
+      fetch(`${departmentName}&joinYear=${joinYear}`, {
+        method: 'GET',
+        headers: {
+          // 'Content-Type': 'application/json', // GET 요청에 Content-Type 필요 없음
+          'Origin' : 'http://localhost:8080/',
+        }
+      })
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok');
+                }
+                return response.json();
+              })
+              .then(data => {
+                document.getElementById('curriculumData').value = JSON.stringify(data, null, 2);
+              })
+              .catch(error => console.error('Error:', error));
+    } else {
+      alert('모든 필수 항목을 채워주세요.');
+    }
+  }
 </script>
 
 </body>
