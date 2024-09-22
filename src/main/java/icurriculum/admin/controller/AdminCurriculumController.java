@@ -12,6 +12,7 @@ import java.util.Currency;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -102,4 +103,23 @@ public class AdminCurriculumController {
 
         return "성공적으로 커리큘럼 수정!";
     }
+    @DeleteMapping("/delete")
+    @ResponseBody
+    public String deleteCurriculum(@RequestParam MajorType majorType,
+                                   @RequestParam DepartmentName departmentName,
+                                   @RequestParam Integer joinYear){
+
+        // Department 객체를 데이터베이스에서 조회
+        Department department = departmentRepository.findByName(departmentName)
+                .orElseThrow(() -> new RuntimeException("학과가 존재하지 않음"));
+
+        CurriculumDecider curriculumDecider = new CurriculumDecider(majorType, department, joinYear);
+
+        Curriculum curriculum = adminCurriculumService.getCurriculumByDecider(curriculumDecider);
+
+        curriculumRepository.delete(curriculum);
+
+        return "성공적으로 커리큘럼 삭제!";
+    }
+
 }
