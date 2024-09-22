@@ -1,12 +1,18 @@
 package icurriculum.domain.take.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import icurriculum.domain.course.Course;
 import icurriculum.domain.member.Member;
 import icurriculum.domain.member.RoleType;
+import icurriculum.domain.membermajor.MajorType;
 import icurriculum.domain.take.Category;
 import icurriculum.domain.take.CustomCourse;
 import icurriculum.domain.take.Take;
 import icurriculum.domain.take.repository.TakeRepository;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,11 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TakeServiceTest {
@@ -32,45 +33,73 @@ class TakeServiceTest {
     private Member testMember;
     private Course course;
     private CustomCourse customCourse;
+    private Take take;
+    private Take customTake;
 
     @BeforeEach
     void setUp() {
-        testMember = Member.builder().name("이승철").joinYear(19).role(RoleType.ROLE_USER).build();
-        course = Course.builder().code("GEB1112").name("크로스오버 1 : 인간의 탐색").credit(2).build();
-        customCourse = new CustomCourse("CSE9318", "현장실습 18", 18);
+        // Test Member
+        testMember = Member.builder()
+            .name("이승철")
+            .joinYear(19)
+            .role(RoleType.ROLE_USER)
+            .build();
+
+        // Test Courses
+        course = Course.builder().code("CSE1101").name("객체지향프로그래밍").credit(3).build();
+        customCourse = new CustomCourse("CUSTOM", "현장실습 18", 18);
+
+        // Test Takes
+        take = Take.builder()
+            .category(Category.전공필수)
+            .takenYear("23")
+            .takenSemester("1")
+            .member(testMember)
+            .course(course)
+            .majorType(MajorType.주전공)
+            .build();
+
+        customTake = Take.builder()
+            .category(Category.전공선택)
+            .takenYear("23")
+            .takenSemester("2")
+            .member(testMember)
+            .customCourse(customCourse)
+            .majorType(MajorType.부전공)
+            .build();
     }
 
     @Test
-    @DisplayName("take 데이터 존재, Take List 정상 반환")
-    void findTakesByMember_shouldReturnListOfTakes() {
+    @DisplayName("Member로 Take 리스트를 조회하는 테스트")
+    void 멤버로_수강_리스트_조회_테스트() {
         // given
-        List<Take> mockTakes = List.of(
-                Take.builder().category(Category.교양필수).takenYear("2019").takenSemester("1").member(testMember).course(course).build(),
-                Take.builder().category(Category.전공선택).takenYear("2023").takenSemester("2").member(testMember).customCourse(customCourse).build()
-        );
-        when(takeRepository.findByMember(testMember)).thenReturn(mockTakes);
+        when(takeRepository.findByMember(testMember)).thenReturn(Arrays.asList(take, customTake));
 
         // when
-        List<Take> result = takeService.findTakesByMember(testMember);
+        List<Take> takeList = takeService.getTakeListByMember(testMember);
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result).hasSize(2);
-        assertThat(result).containsAll(mockTakes);
+        assertThat(takeList).isNotEmpty();
+        assertThat(takeList).containsExactly(take, customTake);
+        assertThat(takeList).allMatch(take -> take.getMember().equals(testMember));
     }
 
     @Test
-    @DisplayName("take 데이터가 없을 때, 비어있는 Take List 반환")
-    void findTakesByMember_shouldReturnEmptyListWhenNoTakesFound() {
+    @DisplayName("Member와 MajorType으로 Take 리스트를 조회하는 테스트")
+    void 멤버와_전공유형으로_수강_리스트_조회_테스트() {
         // given
-        when(takeRepository.findByMember(testMember)).thenReturn(List.of());
+        MajorType majorType = MajorType.주전공;
+        when(takeRepository.findByMemberAndMajorType(testMember, majorType))
+            .thenReturn(List.of(take));
 
         // when
-        List<Take> result = takeService.findTakesByMember(testMember);
+        List<Take> takeList = takeService.getTakeListByMemberAndMajorType(testMember, majorType);
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result).isEmpty();
+        assertThat(takeList).isNotEmpty();
+        assertThat(takeList).containsExactly(take);
+        assertThat(takeList).allMatch(take -> take.getMajorType().equals(majorType));
+        assertThat(takeList).extracting(Take::getEffectiveCourse).containsExactly(course);
     }
-
 }
+

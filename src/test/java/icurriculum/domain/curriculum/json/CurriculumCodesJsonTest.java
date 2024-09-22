@@ -47,9 +47,9 @@ class CurriculumCodesJsonTest {
     @DisplayName("전공필수, 전공선택, 교양필수 카테고리에 대한 코드를 정상적으로 반환")
     void findCodesByCategory_ShouldReturnCodesFor전공필수() {
         // when
-        Set<String> 전공필수codes = curriculumCodesJson.findCodesByCategory(전공필수);
-        Set<String> 전공선택codes = curriculumCodesJson.findCodesByCategory(전공선택);
-        Set<String> 교양필수codes = curriculumCodesJson.findCodesByCategory(교양필수);
+        Set<String> 전공필수codes = curriculumCodesJson.findRequiredCodesByCategory(전공필수);
+        Set<String> 전공선택codes = curriculumCodesJson.findRequiredCodesByCategory(전공선택);
+        Set<String> 교양필수codes = curriculumCodesJson.findRequiredCodesByCategory(교양필수);
 
         // then
         assertThat(전공필수codes).containsExactlyInAnyOrder(
@@ -74,23 +74,23 @@ class CurriculumCodesJsonTest {
     @DisplayName("잘못된 카테고리로 코드 조회 시 예외 발생")
     void findCodesByCategory_ShouldThrowExceptionForInvalidCategory() {
         // when & then
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(핵심교양1))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(핵심교양1))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(핵심교양2))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(핵심교양2))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(핵심교양3))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(핵심교양3))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(핵심교양4))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(핵심교양4))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(핵심교양5))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(핵심교양5))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(핵심교양6))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(핵심교양6))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(SW_AI))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(SW_AI))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(창의))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(창의))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> curriculumCodesJson.findCodesByCategory(교양선택))
+        assertThatThrownBy(() -> curriculumCodesJson.findRequiredCodesByCategory(교양선택))
                 .isInstanceOf(RuntimeException.class);
     }
 }

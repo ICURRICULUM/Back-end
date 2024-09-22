@@ -5,6 +5,7 @@ import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class CreativityJsonConverter extends JsonConverter<CreativityJson> {
+
     public CreativityJsonConverter() {
         super(CreativityJson.class);
     }

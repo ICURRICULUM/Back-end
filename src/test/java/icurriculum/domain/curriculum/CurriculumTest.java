@@ -1,15 +1,20 @@
 package icurriculum.domain.curriculum;
 
-import icurriculum.domain.curriculum.json.*;
-import icurriculum.domain.department.Department;
+import static icurriculum.domain.department.DepartmentName.컴퓨터공학과;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import icurriculum.domain.curriculum.json.AlternativeCoursesJson;
+import icurriculum.domain.curriculum.json.CoreJson;
+import icurriculum.domain.curriculum.json.CreativityJson;
+import icurriculum.domain.curriculum.json.CurriculumCodesJson;
+import icurriculum.domain.curriculum.json.RequiredCreditJson;
+import icurriculum.domain.curriculum.json.SwAiJson;
 import icurriculum.domain.membermajor.MajorType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static icurriculum.domain.department.DepartmentName.컴퓨터공학과;
-import static java.util.Collections.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class CurriculumTest {
 
@@ -18,31 +23,25 @@ class CurriculumTest {
     private CoreJson coreJson;
     private SwAiJson swAiJson;
     private CreativityJson creativityJson;
-    private RequirementCreditJson requiredCreditJson;
+    private RequiredCreditJson requiredCreditJson;
     private CurriculumCodesJson curriculumCodesJson;
-    private AlternativeCourseJson alternativeCourseJson;
+    private AlternativeCoursesJson alternativeCoursesJson;
 
     @BeforeEach
     void setUp() {
-        Department department = Department.builder().name(컴퓨터공학과).build();
-        decider = new CurriculumDecider(MajorType.주전공, department, 2019);
+        decider = new CurriculumDecider(MajorType.주전공, 컴퓨터공학과, 19);
 
         coreJson = new CoreJson(false, 9, emptySet(), emptyMap(), emptyMap());
-        swAiJson = new SwAiJson(false, emptySet(), emptySet(),0);
-        creativityJson = new CreativityJson(false, emptySet(), 0);
-        requiredCreditJson = new RequirementCreditJson(130, 65, 39, 21);
+        swAiJson = new SwAiJson(emptySet(), emptySet(), 0);
+        creativityJson = new CreativityJson(emptySet(), 0);
+        requiredCreditJson = new RequiredCreditJson(130, 65, 39, 21);
         curriculumCodesJson = new CurriculumCodesJson(emptyMap());
-        alternativeCourseJson = new AlternativeCourseJson(emptyMap());
+        alternativeCoursesJson = new AlternativeCoursesJson(emptyMap());
 
-        curriculum = Curriculum.builder()
-                .decider(decider)
-                .coreJson(coreJson)
-                .swAiJson(swAiJson)
-                .creativityJson(creativityJson)
-                .requiredCreditJson(requiredCreditJson)
-                .curriculumCodesJson(curriculumCodesJson)
-                .alternativeCourseJson(alternativeCourseJson)
-                .build();
+        curriculum = Curriculum.builder().decider(decider).coreJson(coreJson).swAiJson(swAiJson)
+            .creativityJson(creativityJson).requiredCreditJson(requiredCreditJson)
+            .curriculumCodesJson(curriculumCodesJson).alternativeCoursesJson(alternativeCoursesJson)
+            .build();
     }
 
     @Test
@@ -55,7 +54,7 @@ class CurriculumTest {
         assertThat(curriculum.getCreativityJson()).isEqualTo(creativityJson);
         assertThat(curriculum.getRequiredCreditJson()).isEqualTo(requiredCreditJson);
         assertThat(curriculum.getCurriculumCodesJson()).isEqualTo(curriculumCodesJson);
-        assertThat(curriculum.getAlternativeCourseJson()).isEqualTo(alternativeCourseJson);
+        assertThat(curriculum.getAlternativeCoursesJson()).isEqualTo(alternativeCoursesJson);
     }
 
 }

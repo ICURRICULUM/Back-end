@@ -1,24 +1,27 @@
 package icurriculum.domain.membermajor.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+
 import icurriculum.domain.department.Department;
+import icurriculum.domain.department.DepartmentName;
 import icurriculum.domain.member.Member;
-import icurriculum.domain.membermajor.MemberMajor;
 import icurriculum.domain.membermajor.MajorType;
+import icurriculum.domain.membermajor.MemberMajor;
 import icurriculum.domain.membermajor.repository.MemberMajorRepository;
+import icurriculum.global.response.exception.GeneralException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.util.List;
-
-import static icurriculum.domain.department.DepartmentName.컴퓨터공학과;
-import static icurriculum.domain.member.RoleType.ROLE_USER;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MemberMajorServiceTest {
@@ -31,58 +34,79 @@ class MemberMajorServiceTest {
 
     private Member testMember;
     private Department testDepartment;
+    private MemberMajor testMemberMajor;
 
     @BeforeEach
     void setUp() {
-        testDepartment = Department.builder()
-                .name(컴퓨터공학과)
-                .build();
-
-        testMember = Member.builder()
-                .name("이승철")
-                .joinYear(2019)
-                .role(ROLE_USER)
-                .build();
+        testMember = Member.builder().name("이승철").joinYear(19).build();
+        testDepartment = Department.builder().name(DepartmentName.컴퓨터공학과).build();
+        testMemberMajor = MemberMajor.builder().department(testDepartment).majorType(MajorType.주전공)
+            .member(testMember).build();
     }
 
     @Test
-    @DisplayName("주어진 회원으로 전공 상태 목록을 반환해야 한다.")
-    void findMajorsByMember_shouldReturnMemberMajors() {
+    @DisplayName("Member로 MemberMajor 리스트 조회 성공 테스트")
+    void memberMajorListByMember_성공_테스트() {
         // given
-        List<MemberMajor> mockMemberMajors = List.of(
-                MemberMajor.builder()
-                        .majorType(MajorType.주전공)
-                        .member(testMember)
-                        .department(testDepartment)
-                        .build(),
-                MemberMajor.builder()
-                        .majorType(MajorType.복수전공)
-                        .member(testMember)
-                        .department(testDepartment)
-                        .build()
-        );
-        when(memberMajorRepository.findByMember(testMember)).thenReturn(mockMemberMajors);
+        when(memberMajorRepository.findByMember(testMember)).thenReturn(List.of(testMemberMajor));
 
         // when
-        List<MemberMajor> result = memberMajorService.findMajorsByMember(testMember);
+        List<MemberMajor> result = memberMajorService.getMemberMajorListByMember(testMember);
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result).hasSize(mockMemberMajors.size());
-        assertThat(result).containsAll(mockMemberMajors);
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).isEqualTo(testMemberMajor);
     }
 
     @Test
-    @DisplayName("주어진 회원에게 전공 상태가 없으면 빈 목록을 반환해야 한다.")
-    void findMajorsByMember_shouldReturnEmptyListForMemberWithNoMajors() {
+    @DisplayName("Member로 MemberMajor 리스트 조회 실패 테스트 - 데이터 없음")
+    void memberMajorListByMember_실패_테스트() {
         // given
-        when(memberMajorRepository.findByMember(testMember)).thenReturn(List.of());
+        when(memberMajorRepository.findByMember(testMember)).thenReturn(Collections.emptyList());
+
+        // when & then
+        assertThatThrownBy(() -> memberMajorService.getMemberMajorListByMember(testMember))
+            .isInstanceOf(GeneralException.class);
+    }
+
+    @Test
+    @DisplayName("Member로 MemberMajor 리스트 조회 실패 테스트 - 주전공 없음")
+    void memberMajorListByMember_실패_테스트_주전공_없음() {
+        // given
+        testMemberMajor = MemberMajor.builder().department(testDepartment).member(testMember)
+            .majorType(MajorType.복수전공).build();
+        when(memberMajorRepository.findByMember(testMember)).thenReturn(List.of(testMemberMajor));
+
+        // when & then
+        assertThatThrownBy(() -> memberMajorService.getMemberMajorListByMember(testMember))
+            .isInstanceOf(GeneralException.class);
+    }
+
+    @Test
+    @DisplayName("Member와 MajorType으로 MemberMajor 조회 성공 테스트")
+    void memberMajorByMemberAndMajorType_성공_테스트() {
+        // given
+        when(memberMajorRepository.findByMemberAndMajorType(testMember, MajorType.주전공))
+            .thenReturn(Optional.of(testMemberMajor));
 
         // when
-        List<MemberMajor> result = memberMajorService.findMajorsByMember(testMember);
+        MemberMajor result = memberMajorService.getMemberMajorByMemberAndMajorType(testMember,
+            MajorType.주전공);
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result).isEmpty();
+        assertThat(result).isEqualTo(testMemberMajor);
+    }
+
+    @Test
+    @DisplayName("Member와 MajorType으로 MemberMajor 조회 실패 테스트 - 데이터 없음")
+    void memberMajorByMemberAndMajorType_실패_테스트() {
+        // given
+        given(memberMajorRepository.findByMemberAndMajorType(testMember, MajorType.주전공))
+            .willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(
+            () -> memberMajorService.getMemberMajorByMemberAndMajorType(testMember, MajorType.주전공))
+            .isInstanceOf(GeneralException.class);
     }
 }

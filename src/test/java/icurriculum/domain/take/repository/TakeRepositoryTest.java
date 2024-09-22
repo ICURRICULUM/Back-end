@@ -1,59 +1,67 @@
 package icurriculum.domain.take.repository;
 
-import icurriculum.data.컴퓨터공학과DataInitializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import icurriculum.data.TestDataInitializer;
+import icurriculum.domain.course.repository.CourseRepository;
 import icurriculum.domain.member.Member;
 import icurriculum.domain.member.repository.MemberRepository;
+import icurriculum.domain.membermajor.MajorType;
 import icurriculum.domain.take.Take;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(컴퓨터공학과DataInitializer.class)
-public class TakeRepositoryTest {
+class TakeRepositoryTest {
 
     @Autowired
     private TakeRepository takeRepository;
 
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
-    private 컴퓨터공학과DataInitializer 컴퓨터공학과DataInitializer;
+    private CourseRepository courseRepository;
+
+    private TestDataInitializer testDataInitializer;
 
     private Member testMember;
+    private List<Take> testTakeList;
 
     @BeforeEach
     void setUp() {
-        컴퓨터공학과DataInitializer.init();
-        testMember = memberRepository.findById(컴퓨터공학과DataInitializer.getTestMemberId())
-                .orElseThrow(() -> new RuntimeException("테스트 멤버 존재 X"));
+        testDataInitializer = new TestDataInitializer(memberRepository, courseRepository,
+            takeRepository);
+        testMember = testDataInitializer.initMemberData();
+        testDataInitializer.initCourseData();
+        testTakeList = testDataInitializer.initTakeData();
     }
 
     @Test
-    @DisplayName("findByMember, fetch join 성공")
-    void findByMember_shouldReturnTakesForMember() {
-        // given
-        int actualDataSize = 컴퓨터공학과DataInitializer.getTakesData(testMember).size();
-
+    @DisplayName("Member로 Take 리스트를 조회하는 테스트")
+    void 멤버로_수강_리스트_조회_테스트() {
         // when
-        List<Take> takes = takeRepository.findByMember(testMember);
+        List<Take> findTakeList = takeRepository.findByMember(testMember);
 
         // then
-        assertThat(takes).isNotEmpty();
-        assertThat(takes).hasSize(actualDataSize);
+        assertThat(findTakeList).hasSameSizeAs(testTakeList)
+            .containsExactlyInAnyOrderElementsOf(testTakeList); // 리스트 내 요소 동일
+    }
 
-        for (Take take : takes) {
-            assertThat(take.getMember()).isEqualTo(testMember);
-            assertThat(take.getEffectiveCourse()).isNotNull();
-            assertThat(take.getMember()).isEqualTo(testMember);
-        }
+    @Test
+    @DisplayName("Member와 MajorType으로 Take 리스트를 조회하는 테스트")
+    void 멤버와_전공으로_수강_리스트_조회_테스트() {
+        // given
+        MajorType majorType = MajorType.주전공;
+
+        // when
+        List<Take> findTakeList = takeRepository.findByMemberAndMajorType(testMember, majorType);
+
+        // then
+        assertThat(findTakeList).hasSameSizeAs(testTakeList)
+            .containsExactlyInAnyOrderElementsOf(testTakeList); // 리스트 내 요소 동일
     }
 }
