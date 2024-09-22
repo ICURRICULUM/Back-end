@@ -19,4 +19,14 @@ public class AdminCurriculumService {
                 .orElseThrow(RuntimeException::new);
     }
 
+    @Transactional(readOnly = false) // 쓰기 작업 이므로 읽기 전용 해제
+    public void modifyCurriculum(Curriculum curriculumData, Curriculum modifyCurriculum){
+        modifyCurriculum.setCoreJson(curriculumData.getCoreJson());
+        modifyCurriculum.setSwAiJson(curriculumData.getSwAiJson());
+        modifyCurriculum.setCreativityJson(curriculumData.getCreativityJson());
+        modifyCurriculum.setRequiredCreditJson(curriculumData.getRequiredCreditJson());
+        modifyCurriculum.setCurriculumCodesJson(curriculumData.getCurriculumCodesJson());
+        modifyCurriculum.setAlternativeCourseJson(curriculumData.getAlternativeCourseJson());
+        repository.save(modifyCurriculum);
+    }
 }
