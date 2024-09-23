@@ -7,8 +7,9 @@ import java.util.List;
 
 public abstract class MemberMajorUtils {
 
-    /**
-     * return 주전공 Major 주전공 없을 시 에러 발생
+    /*
+     * return 주전공
+     * 주전공 없을 시 에러 발생
      */
     public static MemberMajor extractMainMemberMajor(List<MemberMajor> memberMajors) {
         return memberMajors.stream()

@@ -33,36 +33,37 @@ public class CommonGeneralRequiredStrategy implements GeneralRequiredStrategy {
         ProcessorRequest.GeneralRequiredDTO request,
         LinkedList<Take> allTakeList
     ) {
-        List<Course> generalRequiredCourseList = request.generalRequiredCourseList();
-        Map<String, Set<String>> alternativeCourseMap = request.alternativeCourseMap();
+        List<Course> generalRequiredCourseList = request.courseListWithCurriculumData()
+            .CourseList();
+        Map<String, Set<String>> alternativeCourseCodeMap = request.alternativeCourseCodeMap();
 
         for (Course essentialCourse : generalRequiredCourseList) {
-            checkEssentialCourseTaken(essentialCourse, allTakeList, alternativeCourseMap);
+            checkEssentialCourseTaken(essentialCourse, allTakeList, alternativeCourseCodeMap);
         }
 
         int requiredCredit = calculateRequiredCredit(generalRequiredCourseList, request.joinYear());
         updateCompletedCourseSetAboutEnglish(request.joinYear());
-        List<Course> uncompletedCourses = getUncompletedCourseList(generalRequiredCourseList);
+        List<Course> uncompletedCourseList = getUncompletedCourseList(generalRequiredCourseList);
 
         return new ProcessorResponse.GeneralRequiredDTO(
             completedCredit.get(),
             requiredCredit,
-            uncompletedCourses,
-            uncompletedCourses.isEmpty()
+            uncompletedCourseList,
+            uncompletedCourseList.isEmpty()
         );
     }
 
     private void checkEssentialCourseTaken(
         Course essentialCourse,
         LinkedList<Take> allTakeList,
-        Map<String, Set<String>> alternativeCourseMap
+        Map<String, Set<String>> alternativeCourseCodeMap
     ) {
         Iterator<Take> iterator = allTakeList.iterator();
         while (iterator.hasNext()) {
             Take take = iterator.next();
 
             if (checkIfEssentialCourseTaken(essentialCourse, take, iterator,
-                alternativeCourseMap)) {
+                alternativeCourseCodeMap)) {
                 return;
             }
         }
@@ -73,7 +74,7 @@ public class CommonGeneralRequiredStrategy implements GeneralRequiredStrategy {
         Course essentialCourse,
         Take take,
         Iterator<Take> iterator,
-        Map<String, Set<String>> alternativeCourseMap
+        Map<String, Set<String>> alternativeCourseCodeMap
     ) {
         String essentialCourseCode = essentialCourse.getCode();
         String takenCode = take.getEffectiveCourse().getCode();
@@ -83,7 +84,7 @@ public class CommonGeneralRequiredStrategy implements GeneralRequiredStrategy {
             return true;
         }
 
-        Set<String> alternativeCourseSet = alternativeCourseMap.get(essentialCourseCode);
+        Set<String> alternativeCourseSet = alternativeCourseCodeMap.get(essentialCourseCode);
         if (alternativeCourseSet != null && alternativeCourseSet.contains(takenCode)) {
             updateTakeAndFieldStatus(essentialCourse, take, iterator);
             return true;

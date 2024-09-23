@@ -15,10 +15,10 @@ import icurriculum.domain.course.Course;
 import icurriculum.domain.course.repository.CourseRepository;
 import icurriculum.domain.curriculum.Curriculum;
 import icurriculum.domain.curriculum.CurriculumDecider;
-import icurriculum.domain.curriculum.json.AlternativeCoursesJson;
+import icurriculum.domain.curriculum.json.AlternativeCourseJson;
 import icurriculum.domain.curriculum.json.CoreJson;
 import icurriculum.domain.curriculum.json.CreativityJson;
-import icurriculum.domain.curriculum.json.CurriculumCodesJson;
+import icurriculum.domain.curriculum.json.CurriculumCodeJson;
 import icurriculum.domain.curriculum.json.RequiredCreditJson;
 import icurriculum.domain.curriculum.json.SwAiJson;
 import icurriculum.domain.curriculum.repository.CurriculumRepository;
@@ -426,29 +426,30 @@ public class TestDataInitializer {
             .swAiJson(getSwAiJsonData())
             .creativityJson(getCreativityJsonData())
             .requiredCreditJson(getRequiredCreditJsonData())
-            .curriculumCodesJson(getCurriculumCodesJsonData())
-            .alternativeCoursesJson(getAlternativeCoursesJsonData())
+            .curriculumCodeJson(getCurriculumCodesJsonData())
+            .alternativeCourseJson(getAlternativeCoursesJsonData())
             .build();
     }
 
     public CoreJson getCoreJsonData() {
         return new CoreJson(false, 9, Collections.emptySet(), Collections.emptyMap(),
-            Collections.emptyMap());
+            Collections.emptyMap(), Collections.emptyMap());
     }
 
     public SwAiJson getSwAiJsonData() {
-        return new SwAiJson(Collections.emptySet(), Collections.emptySet(), 0);
+        return new SwAiJson(Collections.emptySet(), Collections.emptySet(), 0,
+            Collections.emptyMap());
     }
 
     public CreativityJson getCreativityJsonData() {
-        return new CreativityJson(Collections.emptySet(), 0);
+        return new CreativityJson(Collections.emptySet(), 0, Collections.emptyMap());
     }
 
     public RequiredCreditJson getRequiredCreditJsonData() {
         return new RequiredCreditJson(130, 65, 39, 21);
     }
 
-    public CurriculumCodesJson getCurriculumCodesJsonData() {
+    public CurriculumCodeJson getCurriculumCodesJsonData() {
         Map<Category, Set<String>> codes = new HashMap<>();
 
         codes.put(전공필수,
@@ -472,15 +473,15 @@ public class TestDataInitializer {
                 "PHY1004"
             ));
 
-        return new CurriculumCodesJson(codes);
+        return new CurriculumCodeJson(codes, Collections.emptyMap());
     }
 
-    public AlternativeCoursesJson getAlternativeCoursesJsonData() {
+    public AlternativeCourseJson getAlternativeCoursesJsonData() {
         Map<String, Set<String>> alternativeCourseMap = new HashMap<>();
         alternativeCourseMap.put("CSE2013", Set.of("CSE3209"));
         alternativeCourseMap.put("CSE3209", Set.of("CSE2013"));
 
-        return new AlternativeCoursesJson(alternativeCourseMap);
+        return new AlternativeCourseJson(alternativeCourseMap);
     }
 
 }

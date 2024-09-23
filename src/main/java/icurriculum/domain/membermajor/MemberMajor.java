@@ -1,18 +1,24 @@
 package icurriculum.domain.membermajor;
 
-import icurriculum.domain.common.BaseTimeEntity;
-import icurriculum.domain.department.Department;
-import icurriculum.domain.member.Member;
-import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import static icurriculum.domain.membermajor.MajorType.*;
+import static icurriculum.domain.membermajor.MajorType.주전공;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
+
+import icurriculum.domain.department.Department;
+import icurriculum.domain.member.Member;
+import icurriculum.global.common.BaseRDBEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 회원 전공 상태
@@ -20,7 +26,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Getter
-public class MemberMajor extends BaseTimeEntity {
+public class MemberMajor extends BaseRDBEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

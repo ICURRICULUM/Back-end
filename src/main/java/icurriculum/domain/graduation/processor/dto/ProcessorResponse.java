@@ -66,11 +66,23 @@ public abstract class ProcessorResponse {
     }
 
     /*
-     * 이수학점
+     * 이수학점, 전공학점 충족여부
      */
     public record MajorSelectDTO(
-        int completedCredit
+        int completedCredit,
+        boolean isClear
     ) {
 
     }
+
+    /*
+     * 이수학점, 총학점 충족여부
+     */
+    public record GeneralSelectDTO(
+        int completedCredit,
+        boolean isClear
+    ) {
+
+    }
+
 }

@@ -1,6 +1,7 @@
 package icurriculum.domain.graduation.processor.majorselect.strategy;
 
 import icurriculum.domain.graduation.processor.dto.ProcessorRequest;
+import icurriculum.domain.graduation.processor.dto.ProcessorRequest.CurriculumWithCredit;
 import icurriculum.domain.graduation.processor.dto.ProcessorResponse;
 import icurriculum.domain.take.Category;
 import icurriculum.domain.take.Take;
@@ -29,6 +30,10 @@ public class CommonMajorSelectStrategy implements MajorSelectStrategy {
          * - 대체과목을 통해 인정되면 삭제하고, 이수학점을 추가한다. **여기서는 영역 대체가 아니다!, 학수번호가 바뀐 상황**
          */
 
+        Set<String> majorSelectCodeSet = request.curriculumWithCredit().curriculumCodeJson()
+            .getRequiredCodeByCategory(Category.전공선택);
+        Map<String, Set<String>> alternativeCourseCodeMap = request.alternativeCourseCodeMap();
+
         Iterator<Take> iterator = allTakeList.iterator();
         while (iterator.hasNext()) {
             Take take = iterator.next();
@@ -41,8 +46,8 @@ public class CommonMajorSelectStrategy implements MajorSelectStrategy {
 
             if (isTakenByCodeAlternative(
                 take.getEffectiveCourse().getCode(),
-                request.majorSelectCodeSet(),
-                request.alternativeCourseMap())
+                majorSelectCodeSet,
+                alternativeCourseCodeMap)
             ) {
                 if (take.getCategory() != Category.전공선택) {
                     log.error("전공선택으로 인정되지만, 카테코리가 전공선택이 아닙니다:{}", take);
@@ -53,16 +58,30 @@ public class CommonMajorSelectStrategy implements MajorSelectStrategy {
                 iterator.remove();
             }
         }
+        return getMajorSelectDTO(completedCredit, request.curriculumWithCredit());
+    }
 
-        return new ProcessorResponse.MajorSelectDTO(completedCredit);
+    private ProcessorResponse.MajorSelectDTO getMajorSelectDTO(
+        final int majorSelectCompletedCredit,
+        CurriculumWithCredit curriculumWithCredit
+
+    ) {
+        int majorRequiredCompleteCredit = curriculumWithCredit.majorRequiredCompletedCredit();
+        int majorTotalRequiredCredit = curriculumWithCredit.requiredCreditJson()
+            .getSingleRequiredCredit();
+
+        return new ProcessorResponse.MajorSelectDTO(
+            majorSelectCompletedCredit,
+            majorSelectCompletedCredit + majorRequiredCompleteCredit >= majorTotalRequiredCredit
+        );
     }
 
     private boolean isTakenByCodeAlternative(
         String takenCode,
         Set<String> majorSelectCodeSet,
-        Map<String, Set<String>> alternativeCourseMap
+        Map<String, Set<String>> alternativeCourseCodeMap
     ) {
-        Set<String> altCodeSet = alternativeCourseMap.get(takenCode);
+        Set<String> altCodeSet = alternativeCourseCodeMap.get(takenCode);
         if (altCodeSet == null) {
             return false;
         }

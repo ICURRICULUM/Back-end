@@ -1,93 +1,62 @@
 package icurriculum.domain.curriculum;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import icurriculum.domain.common.BaseEntity;
-import icurriculum.domain.curriculum.json.AlternativeCoursesJson;
+import icurriculum.domain.curriculum.json.AlternativeCourseJson;
 import icurriculum.domain.curriculum.json.CoreJson;
 import icurriculum.domain.curriculum.json.CreativityJson;
-import icurriculum.domain.curriculum.json.CurriculumCodesJson;
+import icurriculum.domain.curriculum.json.CurriculumCodeJson;
 import icurriculum.domain.curriculum.json.RequiredCreditJson;
 import icurriculum.domain.curriculum.json.SwAiJson;
-import icurriculum.domain.curriculum.json.converter.AlternativeCourseJsonConverter;
-import icurriculum.domain.curriculum.json.converter.CoreJsonConverter;
-import icurriculum.domain.curriculum.json.converter.CreativityJsonConverter;
-import icurriculum.domain.curriculum.json.converter.CurriculumCodesJsonConverter;
-import icurriculum.domain.curriculum.json.converter.RequiredCreditJsonConverter;
-import icurriculum.domain.curriculum.json.converter.SwAiJsonConverter;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
+import icurriculum.global.common.BaseMongoEntity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+@Document(collection = "curriculums")
 @NoArgsConstructor(access = PROTECTED)
+@CompoundIndexes({
+    @CompoundIndex(
+        name = "uniqueCurriculumDecider",
+        def = "{'decider.majorType': 1, 'decider.departmentName': 1, 'decider.joinYear': 1}",
+        unique = true)
+})
 @Getter
-@Table(
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "unique_curriculum_decider",
-            columnNames = {"major_type", "department_name", "join_year"}
-        )
-    }
-)
-public class Curriculum extends BaseEntity {
+@ToString
+public class Curriculum extends BaseMongoEntity {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "curriculum_id")
-    private Long id;
+    private String id;
 
-    @Embedded
     private CurriculumDecider decider;
 
-    /**
+    /*
      * 핵심교양, SW_AI, 창의, 필수이수학점, 교과과정, 대체과목
      */
 
-    @Convert(converter = CoreJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
     private CoreJson coreJson;
-
-    @Convert(converter = SwAiJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
     private SwAiJson swAiJson;
-
-    @Convert(converter = CreativityJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
     private CreativityJson creativityJson;
-
-    @Convert(converter = RequiredCreditJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
     private RequiredCreditJson requiredCreditJson;
-
-    @Convert(converter = CurriculumCodesJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private CurriculumCodesJson curriculumCodesJson;
-
-    @Convert(converter = AlternativeCourseJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private AlternativeCoursesJson alternativeCoursesJson;
+    private CurriculumCodeJson curriculumCodeJson;
+    private AlternativeCourseJson alternativeCourseJson;
 
     @Builder
     public Curriculum(CurriculumDecider decider, CoreJson coreJson, SwAiJson swAiJson,
         CreativityJson creativityJson, RequiredCreditJson requiredCreditJson,
-        CurriculumCodesJson curriculumCodesJson, AlternativeCoursesJson alternativeCoursesJson) {
+        CurriculumCodeJson curriculumCodeJson, AlternativeCourseJson alternativeCourseJson) {
         this.decider = decider;
         this.coreJson = coreJson;
         this.swAiJson = swAiJson;
         this.creativityJson = creativityJson;
         this.requiredCreditJson = requiredCreditJson;
-        this.curriculumCodesJson = curriculumCodesJson;
-        this.alternativeCoursesJson = alternativeCoursesJson;
+        this.curriculumCodeJson = curriculumCodeJson;
+        this.alternativeCourseJson = alternativeCourseJson;
     }
 
 }

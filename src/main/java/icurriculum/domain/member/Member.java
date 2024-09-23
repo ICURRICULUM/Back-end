@@ -1,21 +1,25 @@
 package icurriculum.domain.member;
 
-import icurriculum.domain.common.BaseTimeEntity;
-import jakarta.persistence.*;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+import icurriculum.global.common.BaseRDBEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
-
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Getter
 @ToString
-public class Member extends BaseTimeEntity {
+public class Member extends BaseRDBEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

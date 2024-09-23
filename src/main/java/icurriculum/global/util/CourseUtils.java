@@ -1,9 +1,9 @@
 package icurriculum.global.util;
 
 import icurriculum.domain.course.Course;
+import icurriculum.domain.take.Take;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public abstract class CourseUtils {
 
@@ -13,23 +13,9 @@ public abstract class CourseUtils {
             .sum();
     }
 
-    public static List<Course> separateCoursesByCodes(List<Course> remainCourseList,
-        String... codes) {
-        Set<String> codeSet = Set.of(codes);
-
-        List<Course> separatedCourseList = remainCourseList.stream()
-            .filter(course -> codeSet.contains(course.getCode()))
-            .collect(Collectors.toList());
-
-        remainCourseList.removeIf(course -> codeSet.contains(course.getCode()));
-
-        return separatedCourseList;
-    }
-
-    public static Set<String> extractCodes(List<Course> courses) {
-        return courses.stream()
-            .map(Course::getCode)
-            .collect(Collectors.toSet());
+    public static int calculateTotalCredit(LinkedList<Take> allTakeList) {
+        return allTakeList.stream()
+            .mapToInt(t -> t.getEffectiveCourse().getCredit()).sum();
     }
 
 }

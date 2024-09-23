@@ -5,10 +5,10 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import icurriculum.domain.common.BaseTimeEntity;
 import icurriculum.domain.course.Course;
 import icurriculum.domain.member.Member;
 import icurriculum.domain.membermajor.MajorType;
+import icurriculum.global.common.BaseRDBEntity;
 import icurriculum.global.response.exception.GeneralException;
 import icurriculum.global.response.status.ErrorStatus;
 import jakarta.persistence.Column;
@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class Take extends BaseTimeEntity {
+public class Take extends BaseRDBEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

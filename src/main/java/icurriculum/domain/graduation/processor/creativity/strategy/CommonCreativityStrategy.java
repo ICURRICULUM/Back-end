@@ -36,8 +36,8 @@ public class CommonCreativityStrategy implements CreativityStrategy {
 
             if (isTakenByCodeAlternative(
                 take.getEffectiveCourse().getCode(),
-                request.creativityJson().getConfirmedCodes(),
-                request.alternativeCourseMap())
+                request.creativityJson().getApprovedCodeSet(),
+                request.alternativeCourseCodeMap())
             ) {
                 completedCredit += take.getEffectiveCourse().getCredit();
                 iterator.remove();
@@ -52,15 +52,15 @@ public class CommonCreativityStrategy implements CreativityStrategy {
 
     private boolean isTakenByCodeAlternative(
         String takenCode,
-        Set<String> confirmedCodeSet,
-        Map<String, Set<String>> alternativeCourseMap
+        Set<String> approvedCodeSet,
+        Map<String, Set<String>> alternativeCourseCodeMap
     ) {
-        Set<String> altCodeSet = alternativeCourseMap.get(takenCode);
+        Set<String> altCodeSet = alternativeCourseCodeMap.get(takenCode);
         if (altCodeSet == null) {
             return false;
         }
         for (String altCode : altCodeSet) {
-            if (confirmedCodeSet.contains(altCode)) {
+            if (approvedCodeSet.contains(altCode)) {
                 return true;
             }
         }

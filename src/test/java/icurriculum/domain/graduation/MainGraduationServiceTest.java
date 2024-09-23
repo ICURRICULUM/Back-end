@@ -1,6 +1,7 @@
 package icurriculum.domain.graduation;
 
 import icurriculum.data.컴퓨터공학과DataInitializer;
+import icurriculum.domain.curriculum.repository.CurriculumRepository;
 import icurriculum.domain.member.Member;
 import icurriculum.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,9 @@ class MainGraduationServiceTest {
 
     @Autowired
     private MainGraduationService mainGraduationService;
+
+    @Autowired
+    private CurriculumRepository curriculumRepository;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -34,6 +38,7 @@ class MainGraduationServiceTest {
     @Test
     @DisplayName("통합 테스트 - 졸업 요건 확인")
     void 통합_테스트_졸업요건확인() {
+        // 실행
         mainGraduationService.execute(testMember);
 
         System.out.println("통합 테스트 실행 완료");

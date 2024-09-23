@@ -29,21 +29,21 @@ public class CommonMajorRequiredStrategy implements MajorRequiredStrategy {
         ProcessorRequest.MajorRequiredDTO request,
         LinkedList<Take> allTakeList
     ) {
-        List<Course> majorRequiredCourseList = request.majorRequiredCourseList();
-        Map<String, Set<String>> alternativeCourseMap = request.alternativeCourseMap();
+        List<Course> majorRequiredCourseList = request.courseListWithCurriculumData().CourseList();
+        Map<String, Set<String>> alternativeCourseCodeMap = request.alternativeCourseCodeMap();
 
         for (Course essentialCourse : majorRequiredCourseList) {
-            checkEssentialCourseTaken(essentialCourse, allTakeList, alternativeCourseMap);
+            checkEssentialCourseTaken(essentialCourse, allTakeList, alternativeCourseCodeMap);
         }
 
         int requiredCredit = CourseUtils.calculateTotalCredit(majorRequiredCourseList);
-        List<Course> uncompletedCourses = getUncompletedCourseList(majorRequiredCourseList);
+        List<Course> uncompletedCourseList = getUncompletedCourseList(majorRequiredCourseList);
 
         return new ProcessorResponse.MajorRequiredDTO(
             completedCredit.get(),
             requiredCredit,
-            uncompletedCourses,
-            uncompletedCourses.isEmpty()
+            uncompletedCourseList,
+            uncompletedCourseList.isEmpty()
         );
 
     }
@@ -51,7 +51,7 @@ public class CommonMajorRequiredStrategy implements MajorRequiredStrategy {
     private void checkEssentialCourseTaken(
         Course essentialCourse,
         LinkedList<Take> allTakeList,
-        Map<String, Set<String>> alternativeCourseMap
+        Map<String, Set<String>> alternativeCourseCodeMap
     ) {
         Iterator<Take> iterator = allTakeList.iterator();
 
@@ -59,7 +59,7 @@ public class CommonMajorRequiredStrategy implements MajorRequiredStrategy {
             Take take = iterator.next();
 
             if (checkIfEssentialCourseTaken(essentialCourse, take, iterator,
-                alternativeCourseMap)) {
+                alternativeCourseCodeMap)) {
                 return;
             }
         }
@@ -69,7 +69,7 @@ public class CommonMajorRequiredStrategy implements MajorRequiredStrategy {
         Course essentialCourse,
         Take take,
         Iterator<Take> iterator,
-        Map<String, Set<String>> alternativeCourseMap
+        Map<String, Set<String>> alternativeCourseCodeMap
     ) {
         String essentialCourseCode = essentialCourse.getCode();
         String takenCode = take.getEffectiveCourse().getCode();
@@ -79,7 +79,7 @@ public class CommonMajorRequiredStrategy implements MajorRequiredStrategy {
             return true;
         }
 
-        Set<String> alternativeCourseSet = alternativeCourseMap.get(essentialCourseCode);
+        Set<String> alternativeCourseSet = alternativeCourseCodeMap.get(essentialCourseCode);
         if (alternativeCourseSet != null && alternativeCourseSet.contains(takenCode)) {
             updateTakeAndFieldStatus(essentialCourse, take, iterator);
             return true;

@@ -3,10 +3,11 @@ package icurriculum.domain.graduation.processor.dto;
 import icurriculum.domain.course.Course;
 import icurriculum.domain.curriculum.json.CoreJson;
 import icurriculum.domain.curriculum.json.CreativityJson;
+import icurriculum.domain.curriculum.json.CurriculumCodeJson;
+import icurriculum.domain.curriculum.json.RequiredCreditJson;
 import icurriculum.domain.curriculum.json.SwAiJson;
 import icurriculum.domain.department.DepartmentName;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ public abstract class ProcessorRequest {
 
     public record SwAiDTO(
         SwAiJson swAiJson,
-        Map<String, Set<String>> alternativeCourseMap,
+        Map<String, Set<String>> alternativeCourseCodeMap,
         DepartmentName departmentName,
         Integer joinYear
     ) {
@@ -23,7 +24,7 @@ public abstract class ProcessorRequest {
 
     public record CoreDTO(
         CoreJson coreJson,
-        Map<String, Set<String>> alternativeCourseMap,
+        Map<String, Set<String>> alternativeCourseCodeMap,
         DepartmentName departmentName,
         Integer joinYear
     ) {
@@ -32,15 +33,15 @@ public abstract class ProcessorRequest {
 
     public record CreativityDTO(
         CreativityJson creativityJson,
-        Map<String, Set<String>> alternativeCourseMap,
+        Map<String, Set<String>> alternativeCourseCodeMap,
         DepartmentName departmentName,
         Integer joinYear) {
 
     }
 
     public record GeneralRequiredDTO(
-        ArrayList<Course> generalRequiredCourseList,
-        Map<String, Set<String>> alternativeCourseMap,
+        CourseListWithCurriculumData courseListWithCurriculumData,
+        Map<String, Set<String>> alternativeCourseCodeMap,
         DepartmentName departmentName,
         Integer joinYear
     ) {
@@ -92,8 +93,8 @@ public abstract class ProcessorRequest {
     }
 
     public record MajorRequiredDTO(
-        ArrayList<Course> majorRequiredCourseList,
-        Map<String, Set<String>> alternativeCourseMap,
+        CourseListWithCurriculumData courseListWithCurriculumData,
+        Map<String, Set<String>> alternativeCourseCodeMap,
         DepartmentName departmentName,
         Integer joinYear
     ) {
@@ -101,10 +102,55 @@ public abstract class ProcessorRequest {
     }
 
     public record MajorSelectDTO(
-        HashSet<String> majorSelectCodeSet,
-        Map<String, Set<String>> alternativeCourseMap,
+        CurriculumWithCredit curriculumWithCredit,
+        Map<String, Set<String>> alternativeCourseCodeMap,
         DepartmentName departmentName,
         Integer joinYear
+    ) {
+
+    }
+
+    public record GeneralSelectDTO(
+        CreditData creditData,
+        Map<String, Set<String>> alternativeCourseCodeMap,
+        DepartmentName departmentName,
+        Integer joinYear
+    ) {
+
+    }
+
+    /*
+     * 전공필수, 교양필수 필요 데이터
+     * - 들어야하는 CourseList
+     * - CurriculumCodeJson(추가 정보 여기에 저장)
+     */
+    public record CourseListWithCurriculumData(
+        List<Course> CourseList,
+        CurriculumCodeJson curriculumCodeJsonForAdditionalData
+    ) {
+
+    }
+
+    /* 전공선택 필요 데이터
+     * - CurriculumCodeJson(추가 정보 여기에 저장)
+     * - 필요학점 데이터
+     * - 전공필수 계산된 이수학점 -> 전공필요학점 충족 확인에 필요
+     */
+    public record CurriculumWithCredit(
+        CurriculumCodeJson curriculumCodeJson,
+        RequiredCreditJson requiredCreditJson,
+        Integer majorRequiredCompletedCredit
+    ) {
+
+    }
+
+    /* 교양선택 필요 데이터
+     * - 필요학점 데이터
+     * - 교양선택 제외하고 계산된 이수학점 -> 총필요학점 충족 확인에 필요
+     */
+    public record CreditData(
+        RequiredCreditJson requiredCreditJson,
+        Integer completedCreditExceptGeneralSelect
     ) {
 
     }

@@ -8,10 +8,8 @@ import icurriculum.global.response.exception.GeneralException;
 import icurriculum.global.response.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CurriculumService {
 

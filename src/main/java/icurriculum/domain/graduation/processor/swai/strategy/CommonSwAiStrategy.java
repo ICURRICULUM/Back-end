@@ -18,8 +18,9 @@ public class CommonSwAiStrategy implements SwAiStrategy {
     ) {
         int completedCredit = 0;
 
-        Set<String> alternativeCodeSet = request.swAiJson().getAlternativeCodes(); // SW_AI 영역 대체과목
-        Map<String, Set<String>> alternativeCourseMap = request.alternativeCourseMap(); // 대체 과목
+        Set<String> areaAlternativeCodeSet = request.swAiJson()
+            .getAreaAlternativeCodeSet(); // SW_AI 영역 대체과목
+        Map<String, Set<String>> alternativeCourseCodeMap = request.alternativeCourseCodeMap(); // 대체 과목
 
         /*
          * [Logic]
@@ -39,7 +40,8 @@ public class CommonSwAiStrategy implements SwAiStrategy {
             }
 
             String takenCode = take.getEffectiveCourse().getCode();
-            if (isTakenByAreaAlternative(takenCode, alternativeCodeSet, alternativeCourseMap)) {
+            if (isTakenByAreaAlternative(takenCode, areaAlternativeCodeSet,
+                alternativeCourseCodeMap)) {
                 completedCredit += take.getEffectiveCourse().getCredit();
             }
         }
@@ -52,20 +54,20 @@ public class CommonSwAiStrategy implements SwAiStrategy {
 
     private boolean isTakenByAreaAlternative(
         String takenCode,
-        Set<String> alternativeCodeSet,
-        Map<String, Set<String>> alternativeCourseMap
+        Set<String> areaAlternativeCodeSet,
+        Map<String, Set<String>> alternativeCourseCodeMap
     ) {
-        if (alternativeCodeSet.contains(takenCode)) {
+        if (areaAlternativeCodeSet.contains(takenCode)) {
             return true;
         }
 
-        Set<String> altCodeSet = alternativeCourseMap.get(takenCode);
+        Set<String> altCodeSet = alternativeCourseCodeMap.get(takenCode);
         if (altCodeSet == null) {
             return false;
         }
 
         for (String altCode : altCodeSet) {
-            if (alternativeCodeSet.contains(altCode)) {
+            if (areaAlternativeCodeSet.contains(altCode)) {
                 return true;
             }
         }

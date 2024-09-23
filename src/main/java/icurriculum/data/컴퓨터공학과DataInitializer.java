@@ -18,10 +18,10 @@ import icurriculum.domain.course.Course;
 import icurriculum.domain.course.repository.CourseRepository;
 import icurriculum.domain.curriculum.Curriculum;
 import icurriculum.domain.curriculum.CurriculumDecider;
-import icurriculum.domain.curriculum.json.AlternativeCoursesJson;
+import icurriculum.domain.curriculum.json.AlternativeCourseJson;
 import icurriculum.domain.curriculum.json.CoreJson;
 import icurriculum.domain.curriculum.json.CreativityJson;
-import icurriculum.domain.curriculum.json.CurriculumCodesJson;
+import icurriculum.domain.curriculum.json.CurriculumCodeJson;
 import icurriculum.domain.curriculum.json.RequiredCreditJson;
 import icurriculum.domain.curriculum.json.SwAiJson;
 import icurriculum.domain.curriculum.repository.CurriculumRepository;
@@ -37,6 +37,7 @@ import icurriculum.domain.take.CustomCourse;
 import icurriculum.domain.take.Take;
 import icurriculum.domain.take.repository.TakeRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,6 +70,8 @@ public class 컴퓨터공학과DataInitializer {
      */
     @PostConstruct
     public void init() {
+        curriculumRepository.deleteAll();
+        
         Department department = getDepartmentData();
         departmentRepository.save(department);
 
@@ -90,6 +93,14 @@ public class 컴퓨터공학과DataInitializer {
 
         Curriculum curriculum = getCurriculumData(memberMajor);
         curriculumRepository.save(curriculum);
+    }
+
+    @PreDestroy
+    public void cleanUp() {
+        // 컬렉션 데이터 삭제
+        curriculumRepository.deleteAll();
+
+        System.out.println("MongoDB 데이터가 성공적으로 삭제되었습니다.");
     }
 
     public Long getTestMemberId() {
@@ -359,19 +370,21 @@ public class 컴퓨터공학과DataInitializer {
             .swAiJson(getSwAiJsonData())
             .creativityJson(getCreativityJsonData())
             .requiredCreditJson(getRequirementCreditJsonData())
-            .curriculumCodesJson(getTestCurriculumCodesJsonData())
-            .alternativeCoursesJson(getAlternativeCourseJsonData())
+            .curriculumCodeJson(getTestCurriculumCodesJsonData())
+            .alternativeCourseJson(getAlternativeCourseJsonData())
             .build();
     }
 
     public CoreJson getCoreJsonData() {
         return new CoreJson(false, 9, Set.of(핵심교양1, 핵심교양2, 핵심교양3, 핵심교양4, 핵심교양5, 핵심교양6),
             Collections.emptyMap(),
+            Collections.emptyMap(),
             Collections.emptyMap());
     }
 
     public SwAiJson getSwAiJsonData() {
-        return new SwAiJson(Collections.emptySet(), Collections.emptySet(), 0);
+        return new SwAiJson(Collections.emptySet(), Collections.emptySet(), 0,
+            Collections.emptyMap());
     }
   /*
     public Set<String> getSwAiConfirmedCode(){
@@ -395,14 +408,14 @@ public class 컴퓨터공학과DataInitializer {
         Set<String> alternativeCodes_전기 = Set.of("ACE2105", "ACE2103", "ACE1307");
     }*/
     public CreativityJson getCreativityJsonData() {
-        return new CreativityJson(Collections.emptySet(), 0);
+        return new CreativityJson(Collections.emptySet(), 0, Collections.emptyMap());
     }
 
     public RequiredCreditJson getRequirementCreditJsonData() {
         return new RequiredCreditJson(130, 65, 39, 21);
     }
 
-    public CurriculumCodesJson getTestCurriculumCodesJsonData() {
+    public CurriculumCodeJson getTestCurriculumCodesJsonData() {
         Map<Category, Set<String>> codes = new HashMap<>();
 
         codes.put(전공필수,
@@ -427,10 +440,10 @@ public class 컴퓨터공학과DataInitializer {
                 "PHY1004"
             ));
 
-        return new CurriculumCodesJson(codes);
+        return new CurriculumCodeJson(codes, Collections.emptyMap());
     }
 
-    public AlternativeCoursesJson getAlternativeCourseJsonData() {
+    public AlternativeCourseJson getAlternativeCourseJsonData() {
         Map<String, Set<String>> alternativeCourseMap = new HashMap<>();
         alternativeCourseMap.put("CSE2013", Set.of("CSE3209"));
         alternativeCourseMap.put("CSE3209", Set.of("CSE2013"));
@@ -439,7 +452,7 @@ public class 컴퓨터공학과DataInitializer {
         alternativeCourseMap.put("GEB1203", Set.of("GEE3029"));
         alternativeCourseMap.put("GEE3029", Set.of("GEB1203"));
 
-        return new AlternativeCoursesJson(alternativeCourseMap);
+        return new AlternativeCourseJson(alternativeCourseMap);
     }
 
 

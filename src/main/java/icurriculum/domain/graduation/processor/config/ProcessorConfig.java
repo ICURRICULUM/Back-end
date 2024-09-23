@@ -8,6 +8,8 @@ import icurriculum.domain.graduation.processor.creativity.CreativityProcessor;
 import icurriculum.domain.graduation.processor.creativity.strategy.CreativityStrategy;
 import icurriculum.domain.graduation.processor.generalrequired.GeneralRequiredProcessor;
 import icurriculum.domain.graduation.processor.generalrequired.strategy.GeneralRequiredStrategy;
+import icurriculum.domain.graduation.processor.generalselect.GeneralSelectProcessor;
+import icurriculum.domain.graduation.processor.generalselect.strategy.GeneralSelectStrategy;
 import icurriculum.domain.graduation.processor.majorrequired.MajorRequiredProcessor;
 import icurriculum.domain.graduation.processor.majorrequired.strategy.MajorRequiredStrategy;
 import icurriculum.domain.graduation.processor.majorselect.MajorSelectProcessor;
@@ -58,6 +60,12 @@ public class ProcessorConfig {
     }
 
     @Bean
+    public Processor<?, ?> generalSelectProcessor(
+        Map<DepartmentName, GeneralSelectStrategy> generalSelectStrategyMap) {
+        return new GeneralSelectProcessor(generalSelectStrategyMap);
+    }
+
+    @Bean
     public Map<ProcessorCategory, Processor<?, ?>> processorMap(List<Processor<?, ?>> processors) {
         Map<ProcessorCategory, Processor<?, ?>> processorMap = new EnumMap<>(
             ProcessorCategory.class);
@@ -85,6 +93,9 @@ public class ProcessorConfig {
 
             if (processor instanceof MajorSelectProcessor) {
                 processorMap.put(ProcessorCategory.전공선택, processor);
+            }
+            if (processor instanceof GeneralSelectProcessor) {
+                processorMap.put(ProcessorCategory.교양선택, processor);
             }
         }
         return processorMap;

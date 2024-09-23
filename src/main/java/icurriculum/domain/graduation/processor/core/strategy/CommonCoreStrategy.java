@@ -17,23 +17,24 @@ import lombok.extern.slf4j.Slf4j;
 public class CommonCoreStrategy implements CoreStrategy {
 
     private final ThreadLocal<Integer> completedCredit = ThreadLocal.withInitial(() -> 0);
-    private final ThreadLocal<Set<Category>> completedAreas = ThreadLocal.withInitial(HashSet::new);
+    private final ThreadLocal<Set<Category>> completedAreaSet = ThreadLocal.withInitial(
+        HashSet::new);
 
     @Override
     public ProcessorResponse.CoreDTO execute(
         ProcessorRequest.CoreDTO request,
         LinkedList<Take> allTakeList
     ) {
-        Boolean isAreaConfirmed = request.coreJson().getIsAreaConfirmed();
-        if (!isAreaConfirmed) {
+        Boolean isAreaFixed = request.coreJson().getIsAreaFixed();
+        if (!isAreaFixed) {
             return createWhenNotAreaConfirmed(request.coreJson(), allTakeList);
         }
 
         return createWhenAreaConfirmed(
             allTakeList,
-            request.coreJson().getAlternativeCodesByArea(),
-            request.alternativeCourseMap(),
-            request.coreJson().getRequiredAreas(),
+            request.coreJson().getAreaAlternativeCodeMap(),
+            request.alternativeCourseCodeMap(),
+            request.coreJson().getRequiredAreaSet(),
             request.coreJson().getRequiredCredit()
         );
     }
@@ -49,7 +50,7 @@ public class CommonCoreStrategy implements CoreStrategy {
         Iterator<Take> iterator = allTakeList.iterator();
         while (iterator.hasNext()) {
             Take take = iterator.next();
-            if (!isCore(take.getCategory(), coreJson.getRequiredAreas())) {
+            if (!isCore(take.getCategory(), coreJson.getRequiredAreaSet())) {
                 continue;
             }
             updateStatus(take, iterator, take.getCategory(), false, false);
@@ -73,7 +74,7 @@ public class CommonCoreStrategy implements CoreStrategy {
     private ProcessorResponse.CoreDTO createWhenAreaConfirmed(
         LinkedList<Take> allTakeList,
         Map<Category, Set<String>> areaAlternativeCodeMap, // 영역 대체
-        Map<String, Set<String>> alternativeCourseMap, // 과목 대체 코드
+        Map<String, Set<String>> alternativeCourseCodeMap, // 과목 대체 코드
         Set<Category> requiredAreaSet, // 필요 영역
         Integer requiredCredit
     ) {
@@ -93,7 +94,7 @@ public class CommonCoreStrategy implements CoreStrategy {
                 iterator,
                 requiredAreaSet,
                 areaAlternativeCodeMap,
-                alternativeCourseMap
+                alternativeCourseCodeMap
             );
         }
 
@@ -129,7 +130,7 @@ public class CommonCoreStrategy implements CoreStrategy {
         Iterator<Take> iterator,
         Set<Category> requiredAreaSet,
         Map<Category, Set<String>> areaAlternativeCodeMap,
-        Map<String, Set<String>> alternativeCourseMap
+        Map<String, Set<String>> alternativeCourseCodeMap
     ) {
         String takenCode = take.getEffectiveCourse().getCode();
 
@@ -144,7 +145,7 @@ public class CommonCoreStrategy implements CoreStrategy {
                 return;
             }
 
-            Set<String> altCodeSet = alternativeCourseMap.get(takenCode);
+            Set<String> altCodeSet = alternativeCourseCodeMap.get(takenCode);
             if (altCodeSet == null) {
                 return;
             }
@@ -162,7 +163,7 @@ public class CommonCoreStrategy implements CoreStrategy {
         Set<Category> uncompletedAreaSet = new HashSet<>();
 
         for (Category area : requiredAreaSet) {
-            if (!completedAreas.get().contains(area)) {
+            if (!completedAreaSet.get().contains(area)) {
                 uncompletedAreaSet.add(area);
             }
         }
@@ -184,7 +185,7 @@ public class CommonCoreStrategy implements CoreStrategy {
             completedCredit.get() + take.getEffectiveCourse().getCredit()
         );
         if (isAreaConfirmed) {
-            completedAreas.get().add(area);
+            completedAreaSet.get().add(area);
         }
         if (!isAlternativeArea) {
             iterator.remove();

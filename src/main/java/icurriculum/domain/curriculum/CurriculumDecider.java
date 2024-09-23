@@ -1,21 +1,23 @@
 package icurriculum.domain.curriculum;
 
+import static lombok.AccessLevel.PROTECTED;
+
 import icurriculum.domain.department.DepartmentName;
 import icurriculum.domain.membermajor.MajorType;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import static jakarta.persistence.EnumType.STRING;
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = PROTECTED)
+@ToString
+public class CurriculumDecider {
 
-@Embeddable
-public record CurriculumDecider(
-    @Enumerated(STRING)
-    @Column(nullable = false)
-    MajorType majorType,
-    @Enumerated(STRING)
-    @Column(nullable = false)
-    DepartmentName departmentName,
-    @Column(nullable = false)
-    Integer joinYear
-) {
+    private MajorType majorType;
 
+    private DepartmentName departmentName;
+
+    private Integer joinYear;
 }

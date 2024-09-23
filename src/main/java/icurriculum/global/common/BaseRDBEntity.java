@@ -1,17 +1,16 @@
-package icurriculum.domain.common;
+package icurriculum.global.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
-
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseTimeEntity {
+public abstract class BaseRDBEntity {
 
     @CreatedDate
     @Column(updatable = false)
@@ -19,5 +18,6 @@ public abstract class BaseTimeEntity {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
 
 }

@@ -5,10 +5,10 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import icurriculum.domain.curriculum.json.AlternativeCoursesJson;
+import icurriculum.domain.curriculum.json.AlternativeCourseJson;
 import icurriculum.domain.curriculum.json.CoreJson;
 import icurriculum.domain.curriculum.json.CreativityJson;
-import icurriculum.domain.curriculum.json.CurriculumCodesJson;
+import icurriculum.domain.curriculum.json.CurriculumCodeJson;
 import icurriculum.domain.curriculum.json.RequiredCreditJson;
 import icurriculum.domain.curriculum.json.SwAiJson;
 import icurriculum.domain.membermajor.MajorType;
@@ -24,23 +24,23 @@ class CurriculumTest {
     private SwAiJson swAiJson;
     private CreativityJson creativityJson;
     private RequiredCreditJson requiredCreditJson;
-    private CurriculumCodesJson curriculumCodesJson;
-    private AlternativeCoursesJson alternativeCoursesJson;
+    private CurriculumCodeJson curriculumCodeJson;
+    private AlternativeCourseJson alternativeCourseJson;
 
     @BeforeEach
     void setUp() {
         decider = new CurriculumDecider(MajorType.주전공, 컴퓨터공학과, 19);
 
-        coreJson = new CoreJson(false, 9, emptySet(), emptyMap(), emptyMap());
-        swAiJson = new SwAiJson(emptySet(), emptySet(), 0);
-        creativityJson = new CreativityJson(emptySet(), 0);
+        coreJson = new CoreJson(false, 9, emptySet(), emptyMap(), emptyMap(), emptyMap());
+        swAiJson = new SwAiJson(emptySet(), emptySet(), 0, emptyMap());
+        creativityJson = new CreativityJson(emptySet(), 0, emptyMap());
         requiredCreditJson = new RequiredCreditJson(130, 65, 39, 21);
-        curriculumCodesJson = new CurriculumCodesJson(emptyMap());
-        alternativeCoursesJson = new AlternativeCoursesJson(emptyMap());
+        curriculumCodeJson = new CurriculumCodeJson(emptyMap(), emptyMap());
+        alternativeCourseJson = new AlternativeCourseJson(emptyMap());
 
         curriculum = Curriculum.builder().decider(decider).coreJson(coreJson).swAiJson(swAiJson)
             .creativityJson(creativityJson).requiredCreditJson(requiredCreditJson)
-            .curriculumCodesJson(curriculumCodesJson).alternativeCoursesJson(alternativeCoursesJson)
+            .curriculumCodeJson(curriculumCodeJson).alternativeCourseJson(alternativeCourseJson)
             .build();
     }
 
@@ -53,8 +53,8 @@ class CurriculumTest {
         assertThat(curriculum.getSwAiJson()).isEqualTo(swAiJson);
         assertThat(curriculum.getCreativityJson()).isEqualTo(creativityJson);
         assertThat(curriculum.getRequiredCreditJson()).isEqualTo(requiredCreditJson);
-        assertThat(curriculum.getCurriculumCodesJson()).isEqualTo(curriculumCodesJson);
-        assertThat(curriculum.getAlternativeCoursesJson()).isEqualTo(alternativeCoursesJson);
+        assertThat(curriculum.getCurriculumCodeJson()).isEqualTo(curriculumCodeJson);
+        assertThat(curriculum.getAlternativeCourseJson()).isEqualTo(alternativeCourseJson);
     }
 
 }

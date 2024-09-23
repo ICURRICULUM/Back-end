@@ -3,7 +3,7 @@ package icurriculum.domain.course;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import icurriculum.domain.common.BaseTimeEntity;
+import icurriculum.global.common.BaseRDBEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +18,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = PROTECTED)
 @Getter
 @ToString
-public class Course extends BaseTimeEntity {
+public class Course extends BaseRDBEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
