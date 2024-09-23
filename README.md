@@ -48,6 +48,7 @@ main  -> 실제 운영할 서버로 배포, release에서 QA 후 main으로 merg
 
 #### merge
 - merge는 develop 브랜치를 타켓으로 `squash and merge`
+- 만든 브랜치는 삭제
 
 
 
