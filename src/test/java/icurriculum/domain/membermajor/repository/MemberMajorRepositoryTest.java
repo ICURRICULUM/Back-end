@@ -37,9 +37,12 @@ class MemberMajorRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // TestDataInitializer 초기화 및 테스트 데이터 생성
-        testDataInitializer = new TestDataInitializer(memberRepository, departmentRepository,
-            memberMajorRepository);
+        testDataInitializer = new TestDataInitializer(
+            memberRepository,
+            departmentRepository,
+            memberMajorRepository
+        );
+
         testMember = testDataInitializer.initMemberData();
         department = testDataInitializer.initDepartmentData();
         testMemberMajorList = testDataInitializer.initMemberMajorData();

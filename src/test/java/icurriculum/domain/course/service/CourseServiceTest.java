@@ -31,13 +31,13 @@ class CourseServiceTest {
     void setUp() {
         course1 = Course.builder()
             .code("GEB1112")
-            .credit(3)
+            .credit(2)
             .name("크로스오버 1 : 인간의 탐색")
             .build();
 
         course2 = Course.builder()
             .code("GEB1114")
-            .credit(3)
+            .credit(2)
             .name("크로스오버 3 : 사회의 탐색")
             .build();
     }

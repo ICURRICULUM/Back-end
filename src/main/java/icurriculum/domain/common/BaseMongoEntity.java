@@ -1,4 +1,4 @@
-package icurriculum.global.common;
+package icurriculum.domain.common;
 
 import java.time.LocalDateTime;
 import lombok.Getter;

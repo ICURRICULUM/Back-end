@@ -3,7 +3,7 @@ package icurriculum.domain.course;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import icurriculum.global.common.BaseRDBEntity;
+import icurriculum.domain.common.BaseRDBEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,7 +35,7 @@ public class Course extends BaseRDBEntity {
     private Integer credit;
 
     @Builder
-    public Course(String code, String name, Integer credit) {
+    private Course(String code, String name, Integer credit) {
         this.code = code;
         this.name = name;
         this.credit = credit;

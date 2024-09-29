@@ -20,9 +20,23 @@ public class TakeTest {
 
     @BeforeEach
     void setUp() {
-        testMember = Member.builder().name("이승철").joinYear(19).role(RoleType.ROLE_USER).build();
-        course = Course.builder().code("GEB1112").name("크로스오버 1 : 인간의 탐색").credit(2).build();
-        customCourse = new CustomCourse("CUSTOM", "현장실습 18", 18);
+        testMember = Member.builder()
+            .name("이승철")
+            .joinYear(19)
+            .role(RoleType.ROLE_USER)
+            .build();
+
+        course = Course.builder()
+            .code("GEB1112")
+            .name("크로스오버 1 : 인간의 탐색")
+            .credit(2)
+            .build();
+
+        customCourse = CustomCourse.builder()
+            .name("현장실습 18")
+            .code("CUSTOM")
+            .credit(18)
+            .build();
     }
 
     @Test
@@ -35,7 +49,6 @@ public class TakeTest {
             .takenSemester("1")
             .member(testMember)
             .course(course)
-            .customCourse(null)
             .majorType(MajorType.주전공)
             .build();
 
@@ -52,7 +65,6 @@ public class TakeTest {
             .takenYear("23")
             .takenSemester("1")
             .member(testMember)
-            .course(null)
             .customCourse(customCourse)
             .majorType(MajorType.주전공)
             .build();
@@ -73,12 +85,9 @@ public class TakeTest {
                 .takenYear("23")
                 .takenSemester("1")
                 .member(testMember)
-                .course(null)
-                .customCourse(null)
                 .majorType(MajorType.주전공)
                 .build()
-        )
-            .isInstanceOf(GeneralException.class);
+        ).isInstanceOf(GeneralException.class);
 
         // when & then :  둘 다 존재할 때 예외 발생
         assertThatThrownBy(
@@ -91,8 +100,7 @@ public class TakeTest {
                 .customCourse(customCourse)
                 .majorType(MajorType.주전공)
                 .build()
-        )
-            .isInstanceOf(GeneralException.class);
+        ).isInstanceOf(GeneralException.class);
     }
 
 }

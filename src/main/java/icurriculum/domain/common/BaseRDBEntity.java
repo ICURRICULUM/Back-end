@@ -1,4 +1,4 @@
-package icurriculum.global.common;
+package icurriculum.domain.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

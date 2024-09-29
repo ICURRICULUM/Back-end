@@ -4,7 +4,7 @@ import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import icurriculum.global.common.BaseRDBEntity;
+import icurriculum.domain.common.BaseRDBEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -30,7 +30,7 @@ public class Department extends BaseRDBEntity {
     private DepartmentName name;
 
     @Builder
-    public Department(DepartmentName name) {
+    private Department(DepartmentName name) {
         this.name = name;
     }
 

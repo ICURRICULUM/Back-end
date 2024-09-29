@@ -6,9 +6,9 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import icurriculum.domain.common.BaseRDBEntity;
 import icurriculum.domain.department.Department;
 import icurriculum.domain.member.Member;
-import icurriculum.global.common.BaseRDBEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -20,9 +20,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
+/*
  * 회원 전공 상태
  */
+
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Getter
@@ -46,14 +47,16 @@ public class MemberMajor extends BaseRDBEntity {
     private Member member;
 
     @Builder
-    public MemberMajor(MajorType majorType, Department department, Member member) {
+    private MemberMajor(MajorType majorType, Department department, Member member) {
         this.majorType = majorType;
         this.department = department;
         this.member = member;
     }
 
-    /**
-     * 비즈니스 method 주전공 확인
+    /*
+     * [비즈니스 method]
+     *
+     * - 주전공 확인
      */
     public boolean isMain() {
         return this.majorType == 주전공;

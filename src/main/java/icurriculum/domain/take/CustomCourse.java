@@ -1,19 +1,17 @@
 package icurriculum.domain.take;
 
-
 import static lombok.AccessLevel.PROTECTED;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Embeddable
-@Getter
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor
+@Getter
 @ToString
 public class CustomCourse {
 
@@ -26,4 +24,10 @@ public class CustomCourse {
     @Column(name = "custom_credit")
     private Integer credit;
 
+    @Builder
+    private CustomCourse(String code, String name, Integer credit) {
+        this.code = code;
+        this.name = name;
+        this.credit = credit;
+    }
 }

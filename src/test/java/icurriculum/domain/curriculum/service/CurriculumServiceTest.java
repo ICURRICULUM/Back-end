@@ -1,21 +1,23 @@
 package icurriculum.domain.curriculum.service;
 
-import static icurriculum.domain.department.DepartmentName.컴퓨터공학과;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import icurriculum.domain.curriculum.Curriculum;
 import icurriculum.domain.curriculum.CurriculumDecider;
 import icurriculum.domain.curriculum.repository.CurriculumRepository;
 import icurriculum.domain.department.Department;
+import icurriculum.domain.department.DepartmentName;
 import icurriculum.domain.member.Member;
 import icurriculum.domain.membermajor.MajorType;
 import icurriculum.domain.membermajor.MemberMajor;
 import icurriculum.global.response.exception.GeneralException;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,66 +33,62 @@ class CurriculumServiceTest {
     @InjectMocks
     private CurriculumService curriculumService;
 
-    private MemberMajor testMemberMajor;
-    private Curriculum testCurriculum;
+    private MemberMajor memberMajor;
+    private CurriculumDecider decider;
 
     @BeforeEach
     void setUp() {
-        Member testMember = Member.builder().name("이승철").joinYear(19).build();
-        Department testDepartment = Department.builder().name(컴퓨터공학과).build();
-
-        testMemberMajor = MemberMajor.builder()
-            .majorType(MajorType.주전공)
-            .department(testDepartment)
-            .member(testMember)
+        Member member = Member.builder()
+            .joinYear(2021)
             .build();
 
-        CurriculumDecider decider = new CurriculumDecider(
-            testMemberMajor.getMajorType(),
-            testMemberMajor.getDepartment().getName(),
-            testMemberMajor.getMember().getJoinYear()
-        );
+        Department department = Department.builder()
+            .name(DepartmentName.컴퓨터공학과)
+            .build();
 
-        testCurriculum = Curriculum.builder()
-            .decider(decider)
+        memberMajor = MemberMajor.builder()
+            .member(member)
+            .department(department)
+            .majorType(MajorType.주전공)
+            .build();
+
+        decider = CurriculumDecider.builder()
+            .majorType(MajorType.주전공)
+            .departmentName(department.getName())
+            .joinYear(2021)
             .build();
     }
 
     @Test
-    @DisplayName("MemberMajor로 Curriculum 조회 성공 테스트")
-    void getCurriculumByMemberMajor_성공() {
+    void 커리큘럼_조회_성공() {
         // given
-        CurriculumDecider decider = new CurriculumDecider(
-            testMemberMajor.getMajorType(),
-            testMemberMajor.getDepartment().getName(),
-            testMemberMajor.getMember().getJoinYear()
-        );
-
+        Curriculum curriculum = mock(Curriculum.class);
         when(curriculumRepository.findByDecider(decider))
-            .thenReturn(Optional.of(testCurriculum));
+            .thenReturn(Optional.of(curriculum));
 
         // when
-        Curriculum foundCurriculum = curriculumService.getCurriculumByMemberMajor(testMemberMajor);
+        curriculumService.getCurriculumByMemberMajor(memberMajor);
 
         // then
-        assertThat(foundCurriculum).isEqualTo(testCurriculum);
+        verify(curriculumRepository, times(1))
+            .findByDecider(any(CurriculumDecider.class));
+        verify(curriculum, times(1))
+            .validate();
     }
 
     @Test
-    @DisplayName("MemberMajor로 Curriculum 조회 실패 테스트 - Curriculum이 없는 경우")
-    void getCurriculumByMemberMajor_실패_없는_경우() {
+    void 커리큘럼_조회_실패() {
         // given
-        CurriculumDecider decider = new CurriculumDecider(
-            testMemberMajor.getMajorType(),
-            testMemberMajor.getDepartment().getName(),
-            testMemberMajor.getMember().getJoinYear()
-        );
-
-        when(curriculumRepository.findByDecider(decider))
+        when(curriculumRepository.findByDecider(any(CurriculumDecider.class)))
             .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> curriculumService.getCurriculumByMemberMajor(testMemberMajor))
-            .isInstanceOf(GeneralException.class);
+        GeneralException exception = assertThrows(
+            GeneralException.class,
+            () -> curriculumService.getCurriculumByMemberMajor(memberMajor)
+        );
+
+        verify(curriculumRepository, times(1))
+            .findByDecider(any(CurriculumDecider.class));
     }
 }

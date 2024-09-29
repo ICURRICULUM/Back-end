@@ -4,7 +4,7 @@ import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import icurriculum.global.common.BaseRDBEntity;
+import icurriculum.domain.common.BaseRDBEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -36,7 +36,7 @@ public class Member extends BaseRDBEntity {
     private RoleType role;
 
     @Builder
-    public Member(String name, Integer joinYear, RoleType role) {
+    private Member(String name, Integer joinYear, RoleType role) {
         this.name = name;
         this.joinYear = joinYear;
         this.role = role;

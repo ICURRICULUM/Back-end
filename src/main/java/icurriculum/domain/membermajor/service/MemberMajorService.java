@@ -35,7 +35,7 @@ public class MemberMajorService {
 
 
     /*
-     * 전체 전공List validation method
+     * [전공List validation method]
      *
      * - 회원의 전공은 한 개 이상 이어야 한다.
      * - 회원의 전공상태 중 주전공이 하나라도 있어야 한다.

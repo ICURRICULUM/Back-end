@@ -22,11 +22,14 @@ public class GeneralRequiredStrategyConfig {
         for (GeneralRequiredStrategy strategy : strategyList) {
 
             /*
-             * 모든 필수과목을 다 들어야 하는 학과
+             * [일반 학과]
+             *
+             * - 모든 필수과목을 다 들어야 하는 학과
+             * - 영어 처리는 여기서 가능
              */
             if (strategy instanceof CommonGeneralRequiredStrategy) {
                 strategyMap.put(DepartmentName.컴퓨터공학과, strategy);
-                //strategyMap.put(DepartmentName.전기공학과, strategy);
+                // strategyMap.put(DepartmentName.전기공학과, strategy);
                 continue;
             }
 

@@ -15,12 +15,14 @@ import icurriculum.domain.course.Course;
 import icurriculum.domain.course.repository.CourseRepository;
 import icurriculum.domain.curriculum.Curriculum;
 import icurriculum.domain.curriculum.CurriculumDecider;
-import icurriculum.domain.curriculum.json.AlternativeCourseJson;
-import icurriculum.domain.curriculum.json.CoreJson;
-import icurriculum.domain.curriculum.json.CreativityJson;
-import icurriculum.domain.curriculum.json.CurriculumCodeJson;
-import icurriculum.domain.curriculum.json.RequiredCreditJson;
-import icurriculum.domain.curriculum.json.SwAiJson;
+import icurriculum.domain.curriculum.data.AlternativeCourse;
+import icurriculum.domain.curriculum.data.Core;
+import icurriculum.domain.curriculum.data.Creativity;
+import icurriculum.domain.curriculum.data.GeneralRequired;
+import icurriculum.domain.curriculum.data.MajorRequired;
+import icurriculum.domain.curriculum.data.MajorSelect;
+import icurriculum.domain.curriculum.data.RequiredCredit;
+import icurriculum.domain.curriculum.data.SwAi;
 import icurriculum.domain.curriculum.repository.CurriculumRepository;
 import icurriculum.domain.department.Department;
 import icurriculum.domain.department.DepartmentName;
@@ -31,19 +33,15 @@ import icurriculum.domain.member.repository.MemberRepository;
 import icurriculum.domain.membermajor.MajorType;
 import icurriculum.domain.membermajor.MemberMajor;
 import icurriculum.domain.membermajor.repository.MemberMajorRepository;
-import icurriculum.domain.take.Category;
 import icurriculum.domain.take.CustomCourse;
 import icurriculum.domain.take.Take;
 import icurriculum.domain.take.repository.TakeRepository;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 public class TestDataInitializer {
 
     public static final String MEMBER_NAME = "홍길동";
@@ -76,6 +74,9 @@ public class TestDataInitializer {
     private MemberMajorRepository memberMajorRepository;
 
     private CurriculumRepository curriculumRepository;
+
+    public TestDataInitializer() {
+    }
 
     public TestDataInitializer(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
@@ -114,9 +115,6 @@ public class TestDataInitializer {
     }
 
 
-    /**
-     * 데이터 초기화 메소드
-     */
     public void init() {
         // Test member 데이터 추가
         member = getMemberData();
@@ -177,9 +175,6 @@ public class TestDataInitializer {
     }
 
 
-    /**
-     * 기본 Role 이 있는 Member 데이터 생성
-     */
     public Member getMemberData() {
         return Member.builder()
             .name(MEMBER_NAME)
@@ -403,11 +398,15 @@ public class TestDataInitializer {
 
             // 2023학년도 동계학기
             Take.builder().category(교양선택).takenYear("23").takenSemester("동계").majorType(주전공)
-                .customCourse(new CustomCourse("CUSTOM", "현장실습 6", 6)).member(member).build(),
+                .customCourse(
+                    CustomCourse.builder().code("CUSTOM").name("현장실습 6").credit(6).build()
+                ).member(member).build(),
 
             // 2024학년도 1학기
             Take.builder().category(전공선택).takenYear("24").takenSemester("1").majorType(주전공)
-                .customCourse(new CustomCourse("CUSTOM", "현장실습 18", 18)).member(member).build()
+                .customCourse(
+                    CustomCourse.builder().code("CUSTOM").name("현장실습 18").credit(18).build()
+                ).member(member).build()
         );
     }
 
@@ -418,70 +417,96 @@ public class TestDataInitializer {
     }
 
     public Curriculum getCurriculumData() {
-        CurriculumDecider decider = new CurriculumDecider(MAIN_MAJOR_TYPE, DEPARTMENT_NAME_컴공,
-            JOIN_YEAR);
+        CurriculumDecider decider = CurriculumDecider.builder()
+            .majorType(MAIN_MAJOR_TYPE)
+            .joinYear(JOIN_YEAR)
+            .departmentName(DEPARTMENT_NAME_컴공)
+            .build();
+
         return Curriculum.builder()
             .decider(decider)
-            .coreJson(getCoreJsonData())
-            .swAiJson(getSwAiJsonData())
-            .creativityJson(getCreativityJsonData())
-            .requiredCreditJson(getRequiredCreditJsonData())
-            .curriculumCodeJson(getCurriculumCodesJsonData())
-            .alternativeCourseJson(getAlternativeCoursesJsonData())
+            .core(getCoreData())
+            .swAi(getSwAiData())
+            .creativity(getCreativityData())
+            .requiredCredit(getRequiredCreditData())
+            .majorSelect(getMajorSelectData())
+            .majorRequired(getMajorRequiredData())
+            .generalRequired(getGeneralRequiredData())
+            .alternativeCourse(getAlternativeCourseData())
             .build();
     }
 
-    public CoreJson getCoreJsonData() {
-        return new CoreJson(false, 9, Collections.emptySet(), Collections.emptyMap(),
-            Collections.emptyMap(), Collections.emptyMap());
+    public Core getCoreData() {
+        return Core.builder()
+            .isAreaFixed(false)
+            .requiredCredit(9)
+            .build();
     }
 
-    public SwAiJson getSwAiJsonData() {
-        return new SwAiJson(Collections.emptySet(), Collections.emptySet(), 0,
-            Collections.emptyMap());
+    public SwAi getSwAiData() {
+        return SwAi.builder()
+            .requiredCredit(0)
+            .build();
     }
 
-    public CreativityJson getCreativityJsonData() {
-        return new CreativityJson(Collections.emptySet(), 0, Collections.emptyMap());
+    public Creativity getCreativityData() {
+        return Creativity.builder()
+            .requiredCredit(0)
+            .build();
     }
 
-    public RequiredCreditJson getRequiredCreditJsonData() {
-        return new RequiredCreditJson(130, 65, 39, 21);
+    public RequiredCredit getRequiredCreditData() {
+        return RequiredCredit.builder()
+            .totalNeedCredit(130)
+            .singleNeedCredit(65)
+            .secondNeedCredit(39)
+            .minorNeedCredit(21)
+            .build();
     }
 
-    public CurriculumCodeJson getCurriculumCodesJsonData() {
-        Map<Category, Set<String>> codes = new HashMap<>();
-
-        codes.put(전공필수,
-            Set.of("CSE1101", "CSE1102", "CSE1103", "CSE2101", "CSE2112", "CSE4205")
-        );
-
-        codes.put(전공선택,
-            Set.of(
-                "ICE4029", "IEN3204", "CSE1105", "CSE2103", "CSE2104", "CSE2105", "CSE2107",
-                "CSE3101", "CSE3201", "CSE3203", "CSE3206", "CSE3308", "CSE3309", "CSE4201",
-                "CSE4202", "CSE4204", "CSE4308", "CSE3102", "CSE3207", "CSE4302", "CSE4305",
-                "CSE4314", "CSE3202", "CSE3205", "CSE3302", "CSE3303", "CSE3304", "CSE3307",
-                "CSE4312", "CSE3204", "CSE4301", "CSE4303", "CSE4304", "CSE4307"
-            ));
-
-        codes.put(교양필수,
-            Set.of(
-                "GEB1112", "GEB1114", "GEB1115", "GEB1124", "GEB1131", "GEB1107",
-                "GEB1201", "ACE1204", "ACE1312", "ACE2101",
-                "ACE2104", "ACE2106", "MTH1001", "MTH1002", "PHY1001", "PHY1002", "PHY1003",
-                "PHY1004"
-            ));
-
-        return new CurriculumCodeJson(codes, Collections.emptyMap());
+    public GeneralRequired getGeneralRequiredData() {
+        return GeneralRequired.builder()
+            .codeSet(
+                Set.of(
+                    "GEB1112", "GEB1114", "GEB1115", "GEB1124", "GEB1131", "GEB1107",
+                    "GEB1201", "ACE1204", "ACE1312", "ACE2101",
+                    "ACE2104", "ACE2106", "MTH1001", "MTH1002", "PHY1001", "PHY1002", "PHY1003",
+                    "PHY1004"
+                )
+            )
+            .build();
     }
 
-    public AlternativeCourseJson getAlternativeCoursesJsonData() {
+    public MajorSelect getMajorSelectData() {
+        return MajorSelect.builder()
+            .codeSet(
+                Set.of(
+                    "ICE4029", "IEN3204", "CSE1105", "CSE2103", "CSE2104", "CSE2105", "CSE2107",
+                    "CSE3101", "CSE3201", "CSE3203", "CSE3206", "CSE3308", "CSE3309", "CSE4201",
+                    "CSE4202", "CSE4204", "CSE4308", "CSE3102", "CSE3207", "CSE4302", "CSE4305",
+                    "CSE4314", "CSE3202", "CSE3205", "CSE3302", "CSE3303", "CSE3304", "CSE3307",
+                    "CSE4312", "CSE3204", "CSE4301", "CSE4303", "CSE4304", "CSE4307"
+                )
+            )
+            .build();
+    }
+
+    public MajorRequired getMajorRequiredData() {
+        return MajorRequired.builder()
+            .codeSet(
+                Set.of("CSE1101", "CSE1102", "CSE1103", "CSE2101", "CSE2112", "CSE4205")
+            )
+            .build();
+    }
+
+    public AlternativeCourse getAlternativeCourseData() {
         Map<String, Set<String>> alternativeCourseMap = new HashMap<>();
         alternativeCourseMap.put("CSE2013", Set.of("CSE3209"));
         alternativeCourseMap.put("CSE3209", Set.of("CSE2013"));
 
-        return new AlternativeCourseJson(alternativeCourseMap);
+        return AlternativeCourse.builder()
+            .alternativeCourseCodeMap(alternativeCourseMap)
+            .build();
     }
 
 }
