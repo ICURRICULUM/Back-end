@@ -34,12 +34,11 @@ public class MemberMajorService {
     }
 
 
-    /**
-     * 전체 전공 List validation method
-     * <p>
-     * 1. 회원의 전공은 한 개 이상 이어야 한다.
-     * <p>
-     * 2. 회원의 전공상태 중 주전공이 하나라도 있어야 한다.
+    /*
+     * [전공List validation method]
+     *
+     * - 회원의 전공은 한 개 이상 이어야 한다.
+     * - 회원의 전공상태 중 주전공이 하나라도 있어야 한다.
      */
     private void checkValidMemberMajorList(List<MemberMajor> memberMajorList) {
         if (memberMajorList.isEmpty()) {

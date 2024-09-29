@@ -17,9 +17,8 @@ public class CoreStrategyConfig {
         Map<DepartmentName, CoreStrategy> strategyMap = new EnumMap<>(DepartmentName.class);
 
         for (CoreStrategy strategy : strategyList) {
-            /*
-             * 기본 로직으로 잘 수행되는 학과
-             */
+
+            // 기본 로직으로 잘 수행되는 학과면 추가
             if (strategy instanceof CommonCoreStrategy) {
                 strategyMap.put(DepartmentName.컴퓨터공학과, strategy);
                 continue;

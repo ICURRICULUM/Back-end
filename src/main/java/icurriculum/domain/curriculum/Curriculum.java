@@ -1,93 +1,113 @@
 package icurriculum.domain.curriculum;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import icurriculum.domain.common.BaseEntity;
-import icurriculum.domain.curriculum.json.AlternativeCoursesJson;
-import icurriculum.domain.curriculum.json.CoreJson;
-import icurriculum.domain.curriculum.json.CreativityJson;
-import icurriculum.domain.curriculum.json.CurriculumCodesJson;
-import icurriculum.domain.curriculum.json.RequiredCreditJson;
-import icurriculum.domain.curriculum.json.SwAiJson;
-import icurriculum.domain.curriculum.json.converter.AlternativeCourseJsonConverter;
-import icurriculum.domain.curriculum.json.converter.CoreJsonConverter;
-import icurriculum.domain.curriculum.json.converter.CreativityJsonConverter;
-import icurriculum.domain.curriculum.json.converter.CurriculumCodesJsonConverter;
-import icurriculum.domain.curriculum.json.converter.RequiredCreditJsonConverter;
-import icurriculum.domain.curriculum.json.converter.SwAiJsonConverter;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
+import icurriculum.domain.common.BaseMongoEntity;
+import icurriculum.domain.curriculum.data.AlternativeCourse;
+import icurriculum.domain.curriculum.data.Core;
+import icurriculum.domain.curriculum.data.Creativity;
+import icurriculum.domain.curriculum.data.GeneralRequired;
+import icurriculum.domain.curriculum.data.MajorRequired;
+import icurriculum.domain.curriculum.data.MajorSelect;
+import icurriculum.domain.curriculum.data.RequiredCredit;
+import icurriculum.domain.curriculum.data.SwAi;
+import icurriculum.global.response.exception.GeneralException;
+import icurriculum.global.response.status.ErrorStatus;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+@Document(collection = "curriculums")
 @NoArgsConstructor(access = PROTECTED)
+@CompoundIndexes({
+    @CompoundIndex(
+        name = "uniqueCurriculumDecider",
+        def = "{'decider.majorType': 1, 'decider.departmentName': 1, 'decider.joinYear': 1}",
+        unique = true)
+})
 @Getter
-@Table(
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "unique_curriculum_decider",
-            columnNames = {"major_type", "department_name", "join_year"}
-        )
-    }
-)
-public class Curriculum extends BaseEntity {
+@ToString
+public class Curriculum extends BaseMongoEntity {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "curriculum_id")
-    private Long id;
+    private String id;
 
-    @Embedded
     private CurriculumDecider decider;
 
-    /**
-     * 핵심교양, SW_AI, 창의, 필수이수학점, 교과과정, 대체과목
+    /*
+     * - 핵심교양
+     * - SW_AI
+     * - 창의
+     * - 전공필수
+     * - 전공선택
+     * - 교양필수
+     * - 필수이수학점
+     * - 대체과목
      */
 
-    @Convert(converter = CoreJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private CoreJson coreJson;
-
-    @Convert(converter = SwAiJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private SwAiJson swAiJson;
-
-    @Convert(converter = CreativityJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private CreativityJson creativityJson;
-
-    @Convert(converter = RequiredCreditJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private RequiredCreditJson requiredCreditJson;
-
-    @Convert(converter = CurriculumCodesJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private CurriculumCodesJson curriculumCodesJson;
-
-    @Convert(converter = AlternativeCourseJsonConverter.class)
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private AlternativeCoursesJson alternativeCoursesJson;
+    private Core core;
+    private SwAi swAi;
+    private Creativity creativity;
+    private MajorRequired majorRequired;
+    private MajorSelect majorSelect;
+    private GeneralRequired generalRequired;
+    private RequiredCredit requiredCredit;
+    private AlternativeCourse alternativeCourse;
 
     @Builder
-    public Curriculum(CurriculumDecider decider, CoreJson coreJson, SwAiJson swAiJson,
-        CreativityJson creativityJson, RequiredCreditJson requiredCreditJson,
-        CurriculumCodesJson curriculumCodesJson, AlternativeCoursesJson alternativeCoursesJson) {
+    private Curriculum(
+        CurriculumDecider decider,
+        Core core, SwAi swAi,
+        Creativity creativity, MajorRequired majorRequired,
+        MajorSelect majorSelect, GeneralRequired generalRequired,
+        RequiredCredit requiredCredit, AlternativeCourse alternativeCourse
+    ) {
         this.decider = decider;
-        this.coreJson = coreJson;
-        this.swAiJson = swAiJson;
-        this.creativityJson = creativityJson;
-        this.requiredCreditJson = requiredCreditJson;
-        this.curriculumCodesJson = curriculumCodesJson;
-        this.alternativeCoursesJson = alternativeCoursesJson;
+        this.core = core;
+        this.swAi = swAi;
+        this.creativity = creativity;
+        this.majorRequired = majorRequired;
+        this.majorSelect = majorSelect;
+        this.generalRequired = generalRequired;
+        this.requiredCredit = requiredCredit;
+        this.alternativeCourse = alternativeCourse;
+
+        validate();
+    }
+
+    /*
+     * [validate]
+     *
+     * MongoDB repository로 데이터를 조회할 때,
+     * DB에 없는 데이터는 null로 셋팅된다. -> NullPointException 발생 가능성이 높다.
+     *
+     * 따라서 필수값이 빠져있으면 에러를 터트린다.
+     * 필수값이 아니라면, NullPointException을 방지하기 위해 빈 데이터를 셋팅한다.
+     */
+
+    public void validate() {
+        if (decider == null ||
+            core == null || swAi == null ||
+            creativity == null || majorRequired == null ||
+            majorSelect == null || generalRequired == null ||
+            requiredCredit == null || alternativeCourse == null
+        ) {
+            throw new GeneralException(ErrorStatus.CURRICULUM_MISSING_VALUE, this);
+        }
+
+        decider.validate();
+        core.validate();
+        swAi.validate();
+        creativity.validate();
+        majorRequired.validate();
+        majorSelect.validate();
+        generalRequired.validate();
+        requiredCredit.validate();
     }
 
 }

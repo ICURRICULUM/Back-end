@@ -1,21 +1,24 @@
 package icurriculum.domain.department;
 
-import icurriculum.domain.common.BaseTimeEntity;
-import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.Objects;
-
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import icurriculum.domain.common.BaseRDBEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import java.util.Objects;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-public class Department extends BaseTimeEntity {
+public class Department extends BaseRDBEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -27,7 +30,7 @@ public class Department extends BaseTimeEntity {
     private DepartmentName name;
 
     @Builder
-    public Department(DepartmentName name) {
+    private Department(DepartmentName name) {
         this.name = name;
     }
 

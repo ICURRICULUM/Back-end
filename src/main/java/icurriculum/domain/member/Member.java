@@ -1,21 +1,25 @@
 package icurriculum.domain.member;
 
-import icurriculum.domain.common.BaseTimeEntity;
-import jakarta.persistence.*;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+import icurriculum.domain.common.BaseRDBEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
-
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Getter
 @ToString
-public class Member extends BaseTimeEntity {
+public class Member extends BaseRDBEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -32,7 +36,7 @@ public class Member extends BaseTimeEntity {
     private RoleType role;
 
     @Builder
-    public Member(String name, Integer joinYear, RoleType role) {
+    private Member(String name, Integer joinYear, RoleType role) {
         this.name = name;
         this.joinYear = joinYear;
         this.role = role;

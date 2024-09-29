@@ -1,78 +1,81 @@
 package icurriculum.domain.graduation.processor.majorselect.strategy;
 
+import icurriculum.domain.curriculum.data.AlternativeCourse;
 import icurriculum.domain.graduation.processor.dto.ProcessorRequest;
+import icurriculum.domain.graduation.processor.dto.ProcessorRequest.CreditWithData;
 import icurriculum.domain.graduation.processor.dto.ProcessorResponse;
 import icurriculum.domain.take.Category;
 import icurriculum.domain.take.Take;
-import icurriculum.global.response.exception.GeneralException;
-import icurriculum.global.response.status.ErrorStatus;
+import icurriculum.global.util.GraduationUtils;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonMajorSelectStrategy implements MajorSelectStrategy {
 
+    /*
+     * [Logic]
+     *
+     * 1. 전공선택 과목은 삭제하고, 이수학점을 추가한다.
+     * 2. 대체과목을 통해 인정되면 삭제하고, 이수학점을 추가한다.
+     *      여기서는 영역 대체가 아니다!, 학수번호가 바뀐 상황
+     */
     @Override
     public ProcessorResponse.MajorSelectDTO execute(
         ProcessorRequest.MajorSelectDTO request,
         LinkedList<Take> allTakeList
     ) {
-        int completedCredit = 0;
+        ProcessorResponse.MajorSelectDTO response = new ProcessorResponse.MajorSelectDTO();
+        response.initMajorSelectResponse(request.creditWithData());
 
-        /*
-         * [Logic]
-         *
-         * - Category 전공선택 과목은 삭제하고, 이수학점을 추가한다.
-         * - 대체과목을 통해 인정되면 삭제하고, 이수학점을 추가한다. **여기서는 영역 대체가 아니다!, 학수번호가 바뀐 상황**
-         */
+        handleResponse(
+            allTakeList,
+            request.creditWithData(),
+            request.alternativeCourse(),
+            response
+        );
+
+        return response;
+    }
+
+    private void handleResponse(
+        LinkedList<Take> allTakeList,
+        CreditWithData creditWithData,
+        AlternativeCourse alternativeCourse,
+        ProcessorResponse.MajorSelectDTO response
+    ) {
+        Set<String> majorSelectCodeSet = creditWithData.majorSelect().getCodeSet();
 
         Iterator<Take> iterator = allTakeList.iterator();
         while (iterator.hasNext()) {
             Take take = iterator.next();
 
-            if (take.getCategory() == Category.전공선택) {
-                completedCredit += take.getEffectiveCourse().getCredit();
-                iterator.remove();
+            if (isCategoryGeneralRequired(take, majorSelectCodeSet)) {
+                response.update(take, iterator);
                 continue;
             }
 
-            if (isTakenByCodeAlternative(
-                take.getEffectiveCourse().getCode(),
-                request.majorSelectCodeSet(),
-                request.alternativeCourseMap())
+            if (GraduationUtils.isCodeAlternative(
+                take,
+                majorSelectCodeSet,
+                alternativeCourse)
             ) {
-                if (take.getCategory() != Category.전공선택) {
-                    log.error("전공선택으로 인정되지만, 카테코리가 전공선택이 아닙니다:{}", take);
-                    throw new GeneralException(ErrorStatus.CATEGORY_IS_NOT_VALID, take);
-                }
-
-                completedCredit += take.getEffectiveCourse().getCredit();
-                iterator.remove();
+                response.update(take, iterator);
             }
         }
 
-        return new ProcessorResponse.MajorSelectDTO(completedCredit);
+        response.checkIsClear();
     }
 
-    private boolean isTakenByCodeAlternative(
-        String takenCode,
-        Set<String> majorSelectCodeSet,
-        Map<String, Set<String>> alternativeCourseMap
-    ) {
-        Set<String> altCodeSet = alternativeCourseMap.get(takenCode);
-        if (altCodeSet == null) {
-            return false;
-        }
-
-        for (String altCode : altCodeSet) {
-            if (majorSelectCodeSet.contains(altCode)) {
-                return true;
-            }
-        }
-        return false;
+    /*
+     * IPP(현장실습), 학부연구생, 교환학생과 같은 경우
+     * Curriculum에 없는 수업이라도 학점으로 인정받을 수 있음
+     */
+    private boolean isCategoryGeneralRequired(Take take, Set<String> majorSelectCodeSet) {
+        return GraduationUtils.isApprovedCategory(take, Category.전공선택) ||
+            GraduationUtils.isApproved(take, majorSelectCodeSet);
     }
 
 }

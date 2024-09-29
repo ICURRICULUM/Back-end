@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
+    /*
      * 비즈니스적으로 에러가 발생했을 때 사용됩니다.
      */
     @ExceptionHandler(GeneralException.class)
