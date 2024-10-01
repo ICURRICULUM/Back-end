@@ -2,7 +2,6 @@ package icurriculum.domain.membermajor.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 import icurriculum.domain.department.Department;
@@ -38,17 +37,28 @@ class MemberMajorServiceTest {
 
     @BeforeEach
     void setUp() {
-        testMember = Member.builder().name("이승철").joinYear(19).build();
-        testDepartment = Department.builder().name(DepartmentName.컴퓨터공학과).build();
-        testMemberMajor = MemberMajor.builder().department(testDepartment).majorType(MajorType.주전공)
-            .member(testMember).build();
+        testMember = Member.builder()
+            .name("이승철")
+            .joinYear(19)
+            .build();
+
+        testDepartment = Department.builder()
+            .name(DepartmentName.컴퓨터공학과)
+            .build();
+
+        testMemberMajor = MemberMajor.builder()
+            .department(testDepartment)
+            .majorType(MajorType.주전공)
+            .member(testMember)
+            .build();
     }
 
     @Test
     @DisplayName("Member로 MemberMajor 리스트 조회 성공 테스트")
     void memberMajorListByMember_성공_테스트() {
         // given
-        when(memberMajorRepository.findByMember(testMember)).thenReturn(List.of(testMemberMajor));
+        when(memberMajorRepository.findByMember(testMember))
+            .thenReturn(List.of(testMemberMajor));
 
         // when
         List<MemberMajor> result = memberMajorService.getMemberMajorListByMember(testMember);
@@ -62,7 +72,8 @@ class MemberMajorServiceTest {
     @DisplayName("Member로 MemberMajor 리스트 조회 실패 테스트 - 데이터 없음")
     void memberMajorListByMember_실패_테스트() {
         // given
-        when(memberMajorRepository.findByMember(testMember)).thenReturn(Collections.emptyList());
+        when(memberMajorRepository.findByMember(testMember))
+            .thenReturn(Collections.emptyList());
 
         // when & then
         assertThatThrownBy(() -> memberMajorService.getMemberMajorListByMember(testMember))
@@ -73,9 +84,14 @@ class MemberMajorServiceTest {
     @DisplayName("Member로 MemberMajor 리스트 조회 실패 테스트 - 주전공 없음")
     void memberMajorListByMember_실패_테스트_주전공_없음() {
         // given
-        testMemberMajor = MemberMajor.builder().department(testDepartment).member(testMember)
-            .majorType(MajorType.복수전공).build();
-        when(memberMajorRepository.findByMember(testMember)).thenReturn(List.of(testMemberMajor));
+        testMemberMajor = MemberMajor.builder()
+            .department(testDepartment)
+            .member(testMember)
+            .majorType(MajorType.복수전공)
+            .build();
+
+        when(memberMajorRepository.findByMember(testMember))
+            .thenReturn(List.of(testMemberMajor));
 
         // when & then
         assertThatThrownBy(() -> memberMajorService.getMemberMajorListByMember(testMember))
@@ -90,8 +106,8 @@ class MemberMajorServiceTest {
             .thenReturn(Optional.of(testMemberMajor));
 
         // when
-        MemberMajor result = memberMajorService.getMemberMajorByMemberAndMajorType(testMember,
-            MajorType.주전공);
+        MemberMajor result = memberMajorService
+            .getMemberMajorByMemberAndMajorType(testMember, MajorType.주전공);
 
         // then
         assertThat(result).isEqualTo(testMemberMajor);
@@ -101,8 +117,8 @@ class MemberMajorServiceTest {
     @DisplayName("Member와 MajorType으로 MemberMajor 조회 실패 테스트 - 데이터 없음")
     void memberMajorByMemberAndMajorType_실패_테스트() {
         // given
-        given(memberMajorRepository.findByMemberAndMajorType(testMember, MajorType.주전공))
-            .willReturn(Optional.empty());
+        when(memberMajorRepository.findByMemberAndMajorType(testMember, MajorType.주전공))
+            .thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(

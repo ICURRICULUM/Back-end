@@ -4,7 +4,6 @@ import static icurriculum.domain.department.DepartmentName.컴퓨터공학과;
 import static icurriculum.domain.member.RoleType.ROLE_USER;
 import static icurriculum.domain.membermajor.MajorType.복수전공;
 import static icurriculum.domain.membermajor.MajorType.주전공;
-import static icurriculum.global.util.MemberMajorUtils.extractMainMemberMajor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -36,7 +35,7 @@ class MemberMajorUtilsTest {
 
     @Test
     @DisplayName("주전공을 가진 MemberMajor를 올바르게 반환해야 한다.")
-    void findMainMajor_shouldReturnMainMajor() {
+    void extractMemberMajorByMajorType_shouldReturnMainMajor() {
         // given
         List<MemberMajor> memberMajors = List.of(
             MemberMajor.builder()
@@ -52,7 +51,10 @@ class MemberMajorUtilsTest {
         );
 
         // when
-        MemberMajor mainMajor = extractMainMemberMajor(memberMajors);
+        MemberMajor mainMajor = MemberMajorUtils.extractMemberMajorByMajorType(
+            memberMajors,
+            주전공
+        );
 
         // then
         assertThat(mainMajor).isNotNull();
@@ -60,8 +62,8 @@ class MemberMajorUtilsTest {
     }
 
     @Test
-    @DisplayName("주전공이 없는 경우 예외를 발생시켜야 한다.")
-    void findMainMajor_shouldThrowExceptionWhenNoMainMajor() {
+    @DisplayName("없는 경우 예외를 발생시켜야 한다.")
+    void extractMemberMajorByMajorType_shouldThrowExceptionWhenNoMajor() {
         // given
         List<MemberMajor> memberMajors = List.of(
             MemberMajor.builder()
@@ -72,7 +74,10 @@ class MemberMajorUtilsTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> extractMainMemberMajor(memberMajors))
+        assertThatThrownBy(() -> MemberMajorUtils.extractMemberMajorByMajorType(
+            memberMajors,
+            주전공
+        ))
             .isInstanceOf(RuntimeException.class);
     }
 

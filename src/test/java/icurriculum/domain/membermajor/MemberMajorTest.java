@@ -44,24 +44,4 @@ class MemberMajorTest {
         assertThat(memberMajor.getMember()).isEqualTo(testMember);
     }
 
-    @Test
-    @DisplayName("주전공 여부를 확인하는 isMain 메소드 테스트")
-    void 주전공_여부_확인_테스트() {
-        // given
-        MemberMajor mainMajor = MemberMajor.builder()
-            .majorType(MajorType.주전공)
-            .department(testDepartment)
-            .member(testMember)
-            .build();
-
-        MemberMajor minorMajor = MemberMajor.builder()
-            .majorType(MajorType.부전공)
-            .department(testDepartment)
-            .member(testMember)
-            .build();
-
-        // when & then
-        assertThat(mainMajor.isMain()).isTrue();
-        assertThat(minorMajor.isMain()).isFalse();
-    }
 }

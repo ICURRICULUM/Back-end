@@ -13,32 +13,49 @@ public enum ErrorStatus {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON401", "로그인 인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
-    /**
-     * Take
+    /*
+     * take
      */
-    TAKE_HAS_ABNORMAL_COURSE(HttpStatus.INTERNAL_SERVER_ERROR, "TAKE501",
+    TAKE_HAS_ABNORMAL_COURSE(HttpStatus.BAD_REQUEST, "TAKE401",
         "Take에는 Course 또는 CustomCourse 중 하나만 채워져 있어야 한다"),
 
-    /**
-     * MemberMajor
+    /*
+     * memberMajor
      */
-    MEMBER_MAJOR_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBERMAJOR401", "회원의 전공이 한개도 존재하지 않습니다."),
-    MEMBER_MAIN_MAJOR_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBERMAJOR402", "회원의 주전공이 존재하지 않습니다."),
+    MEMBER_MAJOR_NOT_FOUND(HttpStatus.BAD_REQUEST, "MAJOR401", "회원의 전공이 존재하지 않습니다."),
 
-    /**
-     * Curriculum
-     */
-    CURRICULUM_NOT_FOUND(HttpStatus.NOT_FOUND, "CURRICULUM401", "해당학과의 졸업요건을 지원하지 않습니다."),
-
-    CURRICULUM_NOT_VALID_CATEGORY(HttpStatus.INTERNAL_SERVER_ERROR, "CURRICULUM0501",
-        "CurriculumCodesJson 에는 전공필수, 전공선택, 교양필수만 존재합니다."),
-
-    /**
+    /*
      * graduation
      */
-    CATEGORY_IS_NOT_VALID(HttpStatus.BAD_REQUEST, "CATEGORYERROR401", "사용자가 수정한 과목영역이 올바르지 않습니다."),
-    PROCESSOR_FIND_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "GRADUATION501",
-        "졸업요건을 검사하기 위한 내부 로직에 에러가 발생했습니다.");
+    MAJOR_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "GRADUATION401", "지원하지 않는 전공타입입니다."),
+
+    /*
+     * curriculum
+     */
+    CURRICULUM_NOT_FOUND(HttpStatus.BAD_REQUEST, "CURRICULUM401", "해당학과의 졸업요건을 지원하지 않습니다."),
+
+    CURRICULUM_NOT_VALID_CATEGORY(HttpStatus.BAD_REQUEST, "CURRICULUM402",
+        "CurriculumCode 에는 전공필수, 전공선택, 교양필수 조회가능합니다."),
+    CORE_NOT_VALID_CATEGORY(HttpStatus.BAD_REQUEST, "CURRICULUM403",
+        "Core 에는 핵심교양만 조회가능합니다."),
+    CURRICULUM_MISSING_VALUE(HttpStatus.BAD_REQUEST, "CURRICULUM404",
+        "Curriculum 내부의 필수값이 빠졌습니다."),
+    CURRICULUM_DECIDER_MISSING_VALUE(HttpStatus.BAD_REQUEST, "CURRICULUM405",
+        "CurriculumDecider 내부의 필수값이 빠졌습니다."),
+
+    /*
+     * category
+     */
+    CATEGORY_IS_NOT_VALID(HttpStatus.BAD_REQUEST, "CATEGORY401", "사용자가 수정한 과목영역이 올바르지 않습니다."),
+
+    /*
+     * processor
+     */
+    PROCESSOR_DATA_EXCEPTION(HttpStatus.BAD_REQUEST, "PROCESSOR401",
+        "졸업요건 프로세서에 전달된 데이터 형식에 문제가 있습니다."),
+
+    PROCESSOR_FIND_EXCEPTION(HttpStatus.BAD_REQUEST, "PROCESSOR402",
+        "졸업요건 프로세서가 조회되지 않습니다.");
 
 
     private final HttpStatus httpStatus;

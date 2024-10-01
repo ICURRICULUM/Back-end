@@ -33,8 +33,11 @@ class TakeRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        testDataInitializer = new TestDataInitializer(memberRepository, courseRepository,
-            takeRepository);
+        testDataInitializer = new TestDataInitializer(
+            memberRepository,
+            courseRepository,
+            takeRepository
+        );
         testMember = testDataInitializer.initMemberData();
         testDataInitializer.initCourseData();
         testTakeList = testDataInitializer.initTakeData();
@@ -48,7 +51,7 @@ class TakeRepositoryTest {
 
         // then
         assertThat(findTakeList).hasSameSizeAs(testTakeList)
-            .containsExactlyInAnyOrderElementsOf(testTakeList); // 리스트 내 요소 동일
+            .containsExactlyInAnyOrderElementsOf(testTakeList);
     }
 
     @Test
@@ -62,6 +65,6 @@ class TakeRepositoryTest {
 
         // then
         assertThat(findTakeList).hasSameSizeAs(testTakeList)
-            .containsExactlyInAnyOrderElementsOf(testTakeList); // 리스트 내 요소 동일
+            .containsExactlyInAnyOrderElementsOf(testTakeList);
     }
 }

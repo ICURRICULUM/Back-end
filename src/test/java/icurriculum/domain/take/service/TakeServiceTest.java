@@ -11,7 +11,6 @@ import icurriculum.domain.take.Category;
 import icurriculum.domain.take.CustomCourse;
 import icurriculum.domain.take.Take;
 import icurriculum.domain.take.repository.TakeRepository;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,18 +37,24 @@ class TakeServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Test Member
         testMember = Member.builder()
             .name("이승철")
             .joinYear(19)
             .role(RoleType.ROLE_USER)
             .build();
 
-        // Test Courses
-        course = Course.builder().code("CSE1101").name("객체지향프로그래밍").credit(3).build();
-        customCourse = new CustomCourse("CUSTOM", "현장실습 18", 18);
+        course = Course.builder()
+            .code("CSE1101")
+            .name("객체지향프로그래밍")
+            .credit(3)
+            .build();
 
-        // Test Takes
+        customCourse = CustomCourse.builder()
+            .code("CUSTOM")
+            .name("현장실습 18")
+            .credit(18)
+            .build();
+
         take = Take.builder()
             .category(Category.전공필수)
             .takenYear("23")
@@ -73,7 +78,8 @@ class TakeServiceTest {
     @DisplayName("Member로 Take 리스트를 조회하는 테스트")
     void 멤버로_수강_리스트_조회_테스트() {
         // given
-        when(takeRepository.findByMember(testMember)).thenReturn(Arrays.asList(take, customTake));
+        when(takeRepository.findByMember(testMember))
+            .thenReturn(List.of(take, customTake));
 
         // when
         List<Take> takeList = takeService.getTakeListByMember(testMember);
