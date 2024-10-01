@@ -5,6 +5,7 @@ import icurriculum.domain.curriculum.data.AlternativeCourse;
 import icurriculum.domain.take.Category;
 import icurriculum.domain.take.Take;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class GraduationUtils {
@@ -89,6 +90,22 @@ public abstract class GraduationUtils {
             }
         }
         return false;
+    }
+
+    public static Optional<String> getAlternativeCode(
+        Take take,
+        Set<String> approvedCodeSet,
+        AlternativeCourse alternativeCourse
+    ) {
+        String takenCode = take.getEffectiveCourse().getCode();
+        Set<String> takenAltCodeSet = alternativeCourse.getAlternativeCodeSet(takenCode);
+
+        for (String altCode : takenAltCodeSet) {
+            if (approvedCodeSet.contains(altCode)) {
+                return Optional.of(altCode);
+            }
+        }
+        return Optional.empty();
     }
 
     public static boolean isAlreadyCheckedByAreaAlt(Take take, Set<Course> areaAltCourseSet) {

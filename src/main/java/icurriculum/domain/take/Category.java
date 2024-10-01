@@ -2,13 +2,13 @@ package icurriculum.domain.take;
 
 public enum Category {
 
-    /**
+    /*
      * 전공
      */
     전공필수,
     전공선택,
 
-    /**
+    /*
      * 교양
      */
     교양필수,
@@ -17,7 +17,7 @@ public enum Category {
     SW_AI,
     창의,
 
-    /**
+    /*
      * 핵심 교양
      */
     핵심교양1,

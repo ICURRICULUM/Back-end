@@ -2,14 +2,14 @@ package icurriculum.global.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import icurriculum.domain.graduation.processor.Processor;
-import icurriculum.domain.graduation.processor.config.ProcessorCategory;
-import icurriculum.domain.graduation.processor.core.CoreProcessor;
-import icurriculum.domain.graduation.processor.creativity.CreativityProcessor;
-import icurriculum.domain.graduation.processor.generalrequired.GeneralRequiredProcessor;
-import icurriculum.domain.graduation.processor.majorrequired.MajorRequiredProcessor;
-import icurriculum.domain.graduation.processor.majorselect.MajorSelectProcessor;
-import icurriculum.domain.graduation.processor.swai.SwAiProcessor;
+import icurriculum.domain.graduation.service.module.processor.Processor;
+import icurriculum.domain.graduation.service.module.processor.config.ProcessorCategory;
+import icurriculum.domain.graduation.service.module.processor.core.CoreProcessor;
+import icurriculum.domain.graduation.service.module.processor.creativity.CreativityProcessor;
+import icurriculum.domain.graduation.service.module.processor.generalrequired.GeneralRequiredProcessor;
+import icurriculum.domain.graduation.service.module.processor.majorrequired.MajorRequiredProcessor;
+import icurriculum.domain.graduation.service.module.processor.majorselect.MajorSelectProcessor;
+import icurriculum.domain.graduation.service.module.processor.swai.SwAiProcessor;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

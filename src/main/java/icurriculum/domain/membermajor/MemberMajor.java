@@ -1,6 +1,5 @@
 package icurriculum.domain.membermajor;
 
-import static icurriculum.domain.membermajor.MajorType.주전공;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -32,6 +31,7 @@ public class MemberMajor extends BaseRDBEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "member_major_id")
+    @Getter
     private Long id;
 
     @Enumerated(STRING)
@@ -51,15 +51,6 @@ public class MemberMajor extends BaseRDBEntity {
         this.majorType = majorType;
         this.department = department;
         this.member = member;
-    }
-
-    /*
-     * [비즈니스 method]
-     *
-     * - 주전공 확인
-     */
-    public boolean isMain() {
-        return this.majorType == 주전공;
     }
 
 }

@@ -44,7 +44,7 @@ public class MemberMajorService {
         if (memberMajorList.isEmpty()) {
             throw new GeneralException(ErrorStatus.MEMBER_MAJOR_NOT_FOUND);
         }
-        MemberMajorUtils.extractMainMemberMajor(memberMajorList);
+        MemberMajorUtils.extractMemberMajorByMajorType(memberMajorList, MajorType.주전공);
     }
 
 }

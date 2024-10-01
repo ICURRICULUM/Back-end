@@ -1,6 +1,7 @@
 package icurriculum.domain.graduation;
 
-import icurriculum.data.컴퓨터공학과DataInitializer;
+import icurriculum.data.컴공19BData;
+import icurriculum.domain.graduation.service.module.MainGraduationService;
 import icurriculum.domain.member.Member;
 import icurriculum.domain.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(properties = "de.flapdoodle.mongodb.embedded.version=5.0.5")
 @Transactional
 @Slf4j
-@Import(컴퓨터공학과DataInitializer.class)
+//@Import(컴퓨터공학과DataInitializer.class)
+//@Import(컴공19LData.class)
+//@Import(컴공20KData.class)
+//@Import(컴공18LData.class)
+//@Import(컴공22LData.class)
+//@Import(컴공22LSJata.class)
+//@Import(컴공22SData.class)
+//@Import(컴공22OData.class)
+@Import(컴공19BData.class)
 class MainGraduationServiceTest {
 
     @Autowired
@@ -24,16 +33,12 @@ class MainGraduationServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Autowired
-    private 컴퓨터공학과DataInitializer dataInitializer;
-
     private Member testMember;
 
     @BeforeEach
     void setUp() {
-        dataInitializer.init();
         testMember = memberRepository
-            .findById(dataInitializer.getTestMemberId())
+            .findById(1L)
             .orElseThrow();
     }
 

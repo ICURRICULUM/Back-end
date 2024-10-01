@@ -1,7 +1,7 @@
 package icurriculum.global.util;
 
-import icurriculum.domain.graduation.processor.Processor;
-import icurriculum.domain.graduation.processor.config.ProcessorCategory;
+import icurriculum.domain.graduation.service.module.processor.Processor;
+import icurriculum.domain.graduation.service.module.processor.config.ProcessorCategory;
 import icurriculum.global.response.exception.GeneralException;
 import icurriculum.global.response.status.ErrorStatus;
 import java.util.Map;

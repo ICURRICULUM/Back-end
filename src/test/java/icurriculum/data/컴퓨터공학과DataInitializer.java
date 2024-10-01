@@ -34,6 +34,7 @@ import icurriculum.domain.membermajor.repository.MemberMajorRepository;
 import icurriculum.domain.take.CustomCourse;
 import icurriculum.domain.take.Take;
 import icurriculum.domain.take.repository.TakeRepository;
+import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,7 @@ public class 컴퓨터공학과DataInitializer {
     /*
      * 기본 데이터 추가 method
      */
+    @PostConstruct
     public void init() {
         Department department = getDepartmentData();
         departmentRepository.save(department);
@@ -239,7 +241,8 @@ public class 컴퓨터공학과DataInitializer {
             Course.builder().code("GEE5017").name("품질의 차원").credit(3).build(),
 
             Course.builder().code("GED6005").name("지능정보서비스와 소프트웨어").credit(3).build(),
-            Course.builder().code("GEE4011").name("세상을 바꾸는 스타트업 이야기").credit(3).build()
+            Course.builder().code("GEE4011").name("세상을 바꾸는 스타트업 이야기").credit(3).build(),
+            Course.builder().code("ACE2106").name("정수론입문").credit(3).build()
         );
     }
 

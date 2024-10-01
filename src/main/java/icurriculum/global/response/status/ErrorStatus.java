@@ -22,8 +22,12 @@ public enum ErrorStatus {
     /*
      * memberMajor
      */
-    MEMBER_MAJOR_NOT_FOUND(HttpStatus.BAD_REQUEST, "MAJOR401", "회원의 전공이 한개도 존재하지 않습니다."),
-    MEMBER_MAIN_MAJOR_NOT_FOUND(HttpStatus.BAD_REQUEST, "MAJOR402", "회원의 주전공이 존재하지 않습니다."),
+    MEMBER_MAJOR_NOT_FOUND(HttpStatus.BAD_REQUEST, "MAJOR401", "회원의 전공이 존재하지 않습니다."),
+
+    /*
+     * graduation
+     */
+    MAJOR_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "GRADUATION401", "지원하지 않는 전공타입입니다."),
 
     /*
      * curriculum
