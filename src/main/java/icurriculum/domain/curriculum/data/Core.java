@@ -103,6 +103,12 @@ public class Core {
         if (isAreaFixed == null || requiredCredit == null) {
             throw new GeneralException(ErrorStatus.CURRICULUM_MISSING_VALUE, this);
         }
+        if (!isAreaFixed && !requiredAreaSet.isEmpty()) {
+            throw new GeneralException(ErrorStatus.CORE_INVALID_DATA, this);
+        }
+        if (isAreaFixed && requiredAreaSet.isEmpty()) {
+            throw new GeneralException(ErrorStatus.CORE_INVALID_DATA, this);
+        }
     }
 
     private void validateCategory(Category category) {
