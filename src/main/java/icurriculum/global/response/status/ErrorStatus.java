@@ -55,9 +55,13 @@ public enum ErrorStatus {
         "졸업요건 프로세서에 전달된 데이터 형식에 문제가 있습니다."),
 
     PROCESSOR_FIND_EXCEPTION(HttpStatus.BAD_REQUEST, "PROCESSOR402",
-        "졸업요건 프로세서가 조회되지 않습니다.");
+        "졸업요건 프로세서가 조회되지 않습니다."),
 
-
+    /*
+     * course
+     */
+    COURSE_IS_NOT_VALID(HttpStatus.BAD_REQUEST,"COURSE401",
+            "해당 과목이 조회되지 않습니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
