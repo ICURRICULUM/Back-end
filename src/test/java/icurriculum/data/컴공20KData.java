@@ -367,14 +367,14 @@ public class 컴공20KData {
     public SwAi getSwAiJsonData() {
         return SwAi.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 
     public Creativity getCreativityJsonData() {
         return Creativity.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 

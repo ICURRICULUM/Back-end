@@ -3,9 +3,11 @@ package icurriculum.domain.graduation.service.module.processor.majorrequired.str
 import icurriculum.domain.course.Course;
 import icurriculum.domain.curriculum.data.AlternativeCourse;
 import icurriculum.domain.curriculum.data.MajorRequired;
+import icurriculum.domain.graduation.service.module.processor.dto.ProcessorConverter;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest.CourseListWithData;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorResponse;
+import icurriculum.domain.graduation.service.module.processor.majorrequired.MajorRequiredResult;
 import icurriculum.domain.take.Take;
 import icurriculum.global.util.GraduationUtils;
 import java.util.Iterator;
@@ -22,26 +24,26 @@ public class CommonMajorRequiredStrategy implements MajorRequiredStrategy {
         ProcessorRequest.MajorRequiredDTO request,
         LinkedList<Take> allTakeList
     ) {
-        ProcessorResponse.MajorRequiredDTO response = new ProcessorResponse.MajorRequiredDTO();
-        response.initMajorRequiredResponse(
+        MajorRequiredResult result = new MajorRequiredResult();
+        result.initMajorRequiredResult(
             request.CourseListWithData().essentialCourseList()
         );
 
-        handleResponse(
+        handleResult(
             allTakeList,
             request.CourseListWithData(),
             request.alternativeCourse(),
-            response
+            result
         );
 
-        return response;
+        return ProcessorConverter.to(result);
     }
 
-    private void handleResponse(
+    private void handleResult(
         LinkedList<Take> allTakeList,
         CourseListWithData<MajorRequired> courseListWithData,
         AlternativeCourse alternativeCourse,
-        ProcessorResponse.MajorRequiredDTO response
+        MajorRequiredResult result
     ) {
 
         List<Course> majorRequiredCourseList = courseListWithData.essentialCourseList();
@@ -52,18 +54,18 @@ public class CommonMajorRequiredStrategy implements MajorRequiredStrategy {
             Take take = iterator.next();
 
             if (GraduationUtils.isApproved(take, majorRequiredCodeSet)) {
-                response.update(take, take.getEffectiveCourse().getCode(), iterator);
+                result.update(take, take.getEffectiveCourse().getCode(), iterator);
                 continue;
             }
             GraduationUtils.getAlternativeCode(take, majorRequiredCodeSet, alternativeCourse)
                 .ifPresent(
-                    alternativeCode -> response.update(take, alternativeCode, iterator)
+                    alternativeCode -> result.update(take, alternativeCode, iterator)
                 );
         }
 
-        response.setRequiredCredit(majorRequiredCourseList);
-        response.setUncompletedCourseList();
-        response.checkIsClear();
+        result.setRequiredCredit(majorRequiredCourseList);
+        result.setUncompletedCourseList();
+        result.checkIsClear();
     }
 
 }

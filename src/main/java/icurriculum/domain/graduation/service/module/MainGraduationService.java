@@ -119,7 +119,7 @@ public class MainGraduationService {
         CreditWithData majorSelectData = new CreditWithData(
             mainCurriculum.getMajorSelect(),
             mainCurriculum.getRequiredCredit().getSingleNeedCredit(),
-            majorRequiredDTO.getCompletedCredit()
+            majorRequiredDTO.completedCredit()
         );
 
         ProcessorResponse.MajorSelectDTO majorSelectDTO = executeProcessor(

@@ -1,9 +1,17 @@
 package icurriculum.domain.graduation;
 
+import icurriculum.data.컴공18LData;
 import icurriculum.data.컴공19BData;
+import icurriculum.data.컴공19LData;
+import icurriculum.data.컴공20KData;
+import icurriculum.data.컴공22LData;
+import icurriculum.data.컴공22LSJata;
+import icurriculum.data.컴공22OData;
+import icurriculum.data.컴공22SData;
 import icurriculum.domain.graduation.service.AllGraduationService;
 import icurriculum.domain.member.Member;
 import icurriculum.domain.member.repository.MemberRepository;
+import icurriculum.testdata.컴퓨터공학과DataInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

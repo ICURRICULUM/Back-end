@@ -1,3 +1,4 @@
+/*
 package icurriculum.domain.categoryjudge;
 
 import icurriculum.domain.curriculum.Curriculum;
@@ -9,3 +10,4 @@ import java.util.Map;
 public interface CategoryJudgeUtils {
     Map<String,Category> judge(List<String> codes, Curriculum curriculum);
 }
+*/

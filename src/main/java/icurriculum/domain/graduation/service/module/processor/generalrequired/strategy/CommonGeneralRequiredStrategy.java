@@ -3,9 +3,11 @@ package icurriculum.domain.graduation.service.module.processor.generalrequired.s
 import icurriculum.domain.course.Course;
 import icurriculum.domain.curriculum.data.AlternativeCourse;
 import icurriculum.domain.curriculum.data.GeneralRequired;
+import icurriculum.domain.graduation.service.module.processor.dto.ProcessorConverter;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest.CourseListWithData;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorResponse;
+import icurriculum.domain.graduation.service.module.processor.generalrequired.GeneralRequiredResult;
 import icurriculum.domain.take.Take;
 import icurriculum.global.util.GraduationUtils;
 import java.util.Iterator;
@@ -33,28 +35,28 @@ public class CommonGeneralRequiredStrategy implements GeneralRequiredStrategy {
         ProcessorRequest.GeneralRequiredDTO request,
         LinkedList<Take> allTakeList
     ) {
-        ProcessorResponse.GeneralRequiredDTO response = new ProcessorResponse.GeneralRequiredDTO();
-        response.initGeneralRequiredResponse(
+        GeneralRequiredResult result = new GeneralRequiredResult();
+        result.initGeneralRequiredResult(
             request.CourseListWithData().essentialCourseList()
         );
 
-        handleResponse(
+        handleResult(
             allTakeList,
             request.CourseListWithData(),
             request.alternativeCourse(),
             request.joinYear(),
-            response
+            result
         );
 
-        return response;
+        return ProcessorConverter.to(result);
     }
 
-    private void handleResponse(
+    private void handleResult(
         LinkedList<Take> allTakeList,
         CourseListWithData<GeneralRequired> CourseListWithData,
         AlternativeCourse alternativeCourse,
         final int joinYear,
-        ProcessorResponse.GeneralRequiredDTO response
+        GeneralRequiredResult result
     ) {
         List<Course> generalRequiredCourseList = CourseListWithData.essentialCourseList();
         Set<String> generalRequiredCodeSet = CourseListWithData.data().getCodeSet();
@@ -64,20 +66,20 @@ public class CommonGeneralRequiredStrategy implements GeneralRequiredStrategy {
             Take take = iterator.next();
 
             if (GraduationUtils.isApproved(take, generalRequiredCodeSet)) {
-                response.update(take, take.getEffectiveCourse().getCode(), iterator, joinYear);
+                result.update(take, take.getEffectiveCourse().getCode(), iterator, joinYear);
                 continue;
             }
 
             GraduationUtils.getAlternativeCode(take, generalRequiredCodeSet, alternativeCourse)
                 .ifPresent(
-                    alternativeCode -> response.update(take, alternativeCode, iterator, joinYear)
+                    alternativeCode -> result.update(take, alternativeCode, iterator, joinYear)
                 );
 
         }
 
-        response.setRequiredCredit(generalRequiredCourseList, joinYear);
-        response.setUncompletedCourseList();
-        response.checkIsClear(joinYear);
+        result.setRequiredCredit(generalRequiredCourseList, joinYear);
+        result.setUncompletedCourseList();
+        result.checkIsClear(joinYear);
     }
 
 

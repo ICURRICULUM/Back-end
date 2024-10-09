@@ -44,6 +44,10 @@ public enum ErrorStatus {
         "Curriculum 내부의 필수값이 빠졌습니다."),
     CURRICULUM_DECIDER_MISSING_VALUE(HttpStatus.BAD_REQUEST, "CURRICULUM406",
         "CurriculumDecider 내부의 필수값이 빠졌습니다."),
+    SW_AI_INVALID_DATA(HttpStatus.BAD_REQUEST, "CURRICULUM407",
+        "sw_ai의 데이터형식이 올바르지 않습니다."),
+    CREATIVITY_INVALID_DATA(HttpStatus.BAD_REQUEST, "CURRICULUM408",
+        "창의의 데이터형식이 올바르지 않습니다."),
 
     /*
      * category

@@ -401,14 +401,14 @@ public class 컴퓨터공학과DataInitializer {
     public SwAi getSwAiJsonData() {
         return SwAi.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 
     public Creativity getCreativityJsonData() {
         return Creativity.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 
