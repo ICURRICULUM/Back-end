@@ -110,4 +110,19 @@ public class Curriculum extends BaseMongoEntity {
         requiredCredit.validate();
     }
 
+    public void update(Curriculum newCurriculum) {
+
+        this.core = newCurriculum.getCore();
+        this.swAi = newCurriculum.getSwAi();
+        this.creativity = newCurriculum.getCreativity();
+        this.majorRequired = newCurriculum.getMajorRequired();
+        this.majorSelect = newCurriculum.getMajorSelect();
+        this.generalRequired = newCurriculum.getGeneralRequired();
+        this.requiredCredit = newCurriculum.getRequiredCredit();
+        this.alternativeCourse = newCurriculum.getAlternativeCourse();
+
+        this.validate();
+    }
+
+
 }
