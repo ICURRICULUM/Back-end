@@ -2,7 +2,7 @@ spring:
   application:
     name: icurriculum
   datasource:
-    url: jdbc:h2:tcp://localhost/~/project/i-curriculum/Back-end
+    url: jdbc:h2:tcp://localhost/~/Desktop/realreal/icurriculumdb
     driver-class-name: org.h2.Driver
     username: sa
   jpa:
