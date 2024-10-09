@@ -1,6 +1,6 @@
 package icurriculum.domain.course.service;
 
-import icurriculum.domain.categoryjudge.CategoryJudgeUtilsImpl;
+import icurriculum.domain.categoryjudge.CategoryJudgeUtils;
 import icurriculum.domain.course.Course;
 import icurriculum.domain.course.dto.CourseConverter;
 import icurriculum.domain.course.dto.CourseResponse.DetailInfoDTO;
@@ -25,7 +25,6 @@ public class CourseService {
 
     private final CourseRepository repository;
     private final CurriculumService curriculumService;
-    private final CategoryJudgeUtilsImpl categoryJudgeUtils;
 
     public List<Course> getCourseListByCodeSet(Set<String> codes) {
         return repository.findByCodeSet(codes);
@@ -36,12 +35,13 @@ public class CourseService {
         /**
          * todo : error 처리 수
          */
-        if (course.isEmpty()) throw new GeneralException(ErrorStatus.COURSE_IS_NOT_VALID);
+        if (course.isEmpty()) throw new GeneralException(ErrorStatus.COURSE_IS_NOT_VALID, this);
         Course findCourse = course.get();
         ArrayList<String> codes = new ArrayList<>();
         codes.add(code);
         Curriculum curriculum = curriculumService.getCurriculumByMemberMajor(memberMajor);
-        Map<String, Category> judgedCodes = categoryJudgeUtils.judge(codes, curriculum);
+        curriculum.validate();
+        Map<String, Category> judgedCodes = CategoryJudgeUtils.judge(codes, curriculum);
         return CourseConverter.toCourseDetailInfo(findCourse, judgedCodes.get(code));
     }
 }
