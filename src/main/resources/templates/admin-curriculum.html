@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <title>Curriculum 관리 페이지</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        #curriculum-result input {
+            width: calc(100% - 20px); /* 너비 설정 */
+            padding: 15px; /* 패딩 증가 */
+            min-height: 50px; /* 최소 높이 설정 */
+            font-size: 1.2rem; /* 글자 크기 증가 */
+            border-radius: 4px; /* 테두리 둥글게 */
+            margin-bottom: 15px; /* 아래쪽 여백 추가 */
+        }
+
+        #curriculum-result strong {
+            display: block; /* 블록 요소로 설정 */
+            text-align: center; /* 가운데 정렬 */
+            margin-top: 10px; /* 위쪽 여백 추가 (선택적) */
+        }
+    </style>
+
 </head>
 <body>
 <a href="/admin">뒤로가기</a> <br>
