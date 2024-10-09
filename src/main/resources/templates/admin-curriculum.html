@@ -94,7 +94,16 @@
 
 
     <label for="joinYear">기준 년도</label>
-    <input type="number" id="joinYear" name="joinYear" required><br><br>
+    <select id="joinYear" name="joinYear" required>
+        <option value="" disabled selected>2018</option> <!-- 기본 선택 항목 -->
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+    </select><br><br>
 
     <button type="submit">커리큘럼 조회하기</button>
 </form>
@@ -186,7 +195,16 @@
 
 
     <label for="newJoinYear">기준 년도</label>
-    <input type="number" id="newJoinYear" name="joinYear" required><br><br>
+    <select id="newJoinYear" name="joinYear" required>
+        <option value="" disabled selected>2018</option> <!-- 기본 선택 항목 -->
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+    </select><br><br>
 
     <label for="curriculumData">커리큘럼 데이터 (JSON)</label><br>
     <textarea id="curriculumData" name="curriculumData" rows="10" cols="50"></textarea><br><br>
@@ -242,14 +260,7 @@
 
     // 커리큘럼 테이블 생성 함수
     function generateCurriculumTable(data) {
-        // const areaDeterminedCodeMap = data.result.core.영역별_지정과목;
-        // const areaDeterminedJson = Object.entries(areaDeterminedCodeMap).map(([key, values]) => {
-        //     return `${key}: [${values.join(', ')}]`;
-        // }).join(', ');
-        // const areaAlternativeCodeMap = data.result.core.영역별_대체과목;
-        // const areaAlternativeJson = Object.entries(areaAlternativeCodeMap).map(([key, values]) => {
-        //     return `${key}: [${values.join(', ')}]`;
-        // }).join(', ');
+
         let tableHtml = `<h3>Curriculum Data:</h3>`;
         tableHtml += `<table border="1" cellpadding="5" cellspacing="0">
                     <tr>
@@ -258,83 +269,82 @@
                     </tr>`;
 
         // decider 정보 접근
-        //
-        // tableHtml += createEditableRow('전공 상태', 'data.result.decider.majorType', data.result.decider.majorType);
-        // tableHtml += createEditableRow('학과 이름', 'data.result.decider.departmentName', data.result.decider.departmentName);
-        // tableHtml += createEditableRow('입학 년도', 'data.result.decider.joinYear', data.result.decider.joinYear);
+        tableHtml += `<tr><td colspan="2"><strong>[Decider]</strong></td></tr>`;
+        tableHtml += `<tr>
+                    <td>전공 상태</td>
+                    <td>${data.result.decider.majorType}</td>
+                </tr>`;
+        tableHtml += `<tr>
+                    <td>학과 이름</td>
+                    <td>${data.result.decider.departmentName}</td>
+                </tr>`;
+        tableHtml += `<tr>
+                    <td>입학 년도</td>
+                    <td>${data.result.decider.joinYear}</td>
+                </tr>`;
 
 
         // Core Subjects
-        tableHtml += `<tr><td colspan="2"><strong>Core Subjects</strong></td></tr>`;
-        tableHtml += createEditableRow('영역 지정여부', 'data.result.core.영역_지정여부', data.result.core.영역_지정여부, false, 'boolean');
-        tableHtml += createEditableRow('요구 학점', 'data.result.core.요구학점', data.result.core.요구학점);
-        tableHtml += createEditableRow('필수 영역', 'data.result.core.필수영역', data.result.core.필수영역.join(', '));
-        // tableHtml += createEditableRow('영역별 지정과목', 'data.result.core.영역별_지정과목', `{ ${areaDeterminedJson} }`, false, 'json');
-        // tableHtml += createEditableRow('영역별 대체과목', 'data.result.core.영역별_대체과목', `{ ${areaAlternativeJson} }`, false, 'json');
-        // Alternative Courses
-        tableHtml += `<tr><td colspan="2"><strong>Alternative Core</strong></td></tr>`;
-        const alternativeCore = data.result.core.영역별_대체과목 || {};
-        for (const [key, value] of Object.entries(alternativeCore)) {
-            tableHtml += `<tr id="alt-course-${key}">
-            <td>영역: <input type="text" data-field="alternativeCore.alternativeCoreMapKey.${key}" value="${key}" onchange="updateKeyCore(this, '${key}')"></td>
-            <td>영역 대체 코드: <input type="text" data-field="alternativeCore.alternativeCoreMap.${key}" value="${value.join(', ')}"></td>
-            <td>
-                <button type="button" onclick="removeAlternativeCore('${key}')">-</button>
-            </td>
-        </tr>`;
-        }    // New alternative core input row
-        tableHtml += `<tr id="new-alternative-row">
-        <td><input type="text" id="newAltCoreKey" placeholder="영역"></td>
-        <td><input type="text" id="newAltCoreValue" placeholder="영역 대체 코드"></td>
-        <td>
-            <button type="button" onclick="addAlternativeCore()">+</button>
-        </td>
-    </tr>`;
+        tableHtml += `<tr><td colspan="2"><strong>[Core]</strong></td></tr>`;
+        tableHtml += createEditableRow('영역_지정여부', 'data.result.core.영역_지정여부', data.result.core.영역_지정여부, false, 'boolean');
+        tableHtml += createEditableRow('요구학점', 'data.result.core.요구학점', data.result.core.요구학점);
+        tableHtml += createEditableRow('필수영역', 'data.result.core.필수영역', data.result.core.필수영역.join(', '));
 
-        tableHtml += `<tr><td colspan="2"><strong>Assign Core</strong></td></tr>`;
-        const assignCore = data.result.core.영역별_지정과목 || {};
-        for (const [key, value] of Object.entries(assignCore)) {
-            tableHtml += `<tr id="alt-course-${key}">
-            <td>영역: <input type="text" data-field="assignCore.assignCoreMapKey.${key}" value="${key}" onchange="updateKeyCoreAssign(this, '${key}')"></td>
-            <td>영역 지정 코드 : <input type="text" data-field="assignCore.assignCoreMap.${key}" value="${value.join(', ')}"></td>
-            <td>
-                <button type="button" onclick="removeAlternativeCoreAssign('${key}')">-</button>
-            </td>
-        </tr>`;
-        }    // New alternative core input row
-        tableHtml += `<tr id="new-alternative-row">
-        <td><input type="text" id="newAssignCoreKey" placeholder="영역"></td>
-        <td><input type="text" id="newAssignCoreValue" placeholder="새로운 지정 코드"></td>
-        <td>
-            <button type="button" onclick="addAssignCore()">+</button>
-        </td>
-    </tr>`;
+        const categories = [
+            "전공필수",
+            "전공선택",
+            "교양필수",
+            "교양선택",
+            "SW_AI",
+            "창의",
+            "핵심교양1",
+            "핵심교양2",
+            "핵심교양3",
+            "핵심교양4",
+            "핵심교양5",
+            "핵심교양6"
+        ];
+
+        tableHtml += `<tr><td colspan="2"><strong>영역별_대체과목</strong></td></tr>`;
+        const areaAlternativeCodeMap = data.result.core.영역별_대체과목 || {};
+        categories.forEach(category => {
+            const value = areaAlternativeCodeMap[category] ? areaAlternativeCodeMap[category].join(', ') : '';
+            tableHtml += createEditableRow(category, `data.result.core.영역별_대체과목.${category}`, value, false);
+        });
+        tableHtml += `<tr><td colspan="2"><strong>영역별_지정과목</strong></td></tr>`;
+        const areaAssignCodeMap = data.result.core.영역별_지정과목 || {};
+        categories.forEach(category => {
+            const value = areaAssignCodeMap[category] ? areaAssignCodeMap[category].join(', ') : '';
+            tableHtml += createEditableRow(category, `data.result.core.영역별_지정과목.${category}`, value, false);
+        });
+
+
         // SW AI Subjects
-        tableHtml += `<tr><td colspan="2"><strong>SW AI Subjects</strong></td></tr>`;
-        tableHtml += createEditableRow('인정 과목', 'data.result.swAi.인정과목', data.result.swAi.인정과목.join(', '));
-        tableHtml += createEditableRow('영역 대체 과목', 'data.result.swAi.영역대체과목', data.result.swAi.영역대체과목.join(', '));
-        tableHtml += createEditableRow('필요 학점', 'data.result.swAi.필요학점', data.result.swAi.필요학점);
+        tableHtml += `<tr><td colspan="2"><strong>[swAi]</strong></td></tr>`;
+        tableHtml += createEditableRow('인정과목', 'data.result.swAi.인정과목', data.result.swAi.인정과목.join(', '));
+        tableHtml += createEditableRow('영역대체과목', 'data.result.swAi.영역대체과목', data.result.swAi.영역대체과목.join(', '));
+        tableHtml += createEditableRow('필요학점', 'data.result.swAi.필요학점', data.result.swAi.필요학점);
 
         // Creativity Subjects
-        tableHtml += `<tr><td colspan="2"><strong>Creativity Subjects</strong></td></tr>`;
-        tableHtml += createEditableRow('인정 과목', 'data.result.creativity.인정과목', data.result.creativity.인정과목.join(', '));
-        tableHtml += createEditableRow('요구 학점', 'data.result.creativity.요구학점', data.result.creativity.요구학점);
+        tableHtml += `<tr><td colspan="2"><strong>[Creativity]</strong></td></tr>`;
+        tableHtml += createEditableRow('인정과목', 'data.result.creativity.인정과목', data.result.creativity.인정과목.join(', '));
+        tableHtml += createEditableRow('요구학점', 'data.result.creativity.요구학점', data.result.creativity.요구학점);
 
         // Required Credits
-        tableHtml += `<tr><td colspan="2"><strong>Required Credits</strong></td></tr>`;
+        tableHtml += `<tr><td colspan="2"><strong>[RequireCredits]</strong></td></tr>`;
         tableHtml += createEditableRow('총 이수 학점', 'data.result.requiredCredit.총필요학점', data.result.requiredCredit.총필요학점);
         tableHtml += createEditableRow('단일 전공', 'data.result.requiredCredit.단일전공_필요학점', data.result.requiredCredit.단일전공_필요학점);
         tableHtml += createEditableRow('복수 연계 융합 전공', 'data.result.requiredCredit.복수_연계_융합_전공_필요학점', data.result.requiredCredit.복수_연계_융합_전공_필요학점);
         tableHtml += createEditableRow('부전공', 'data.result.requiredCredit.부전공_필요학점', data.result.requiredCredit.부전공_필요학점);
 
-        // Curriculum Codes
-        tableHtml += `<tr><td colspan="2"><strong>Curriculum Codes</strong></td></tr>`;
-        tableHtml += createEditableRow('전공 필수 과목', 'data.result.majorRequired.과목코드', data.result.majorRequired.과목코드.join(', '));
-        tableHtml += createEditableRow('전공 선택 과목', 'data.result.majorSelect.과목코드', data.result.majorSelect.과목코드.join(', '));
-        tableHtml += createEditableRow('교양 필수 과목', 'data.result.generalRequired.과목코드', data.result.generalRequired.과목코드.join(', '));
+
+        tableHtml += `<tr><td colspan="2"><strong>[Subjects]</strong></td></tr>`;
+        tableHtml += createEditableRow('전공필수과목', 'data.result.majorRequired.과목코드', data.result.majorRequired.과목코드.join(', '));
+        tableHtml += createEditableRow('전공선택과목', 'data.result.majorSelect.과목코드', data.result.majorSelect.과목코드.join(', '));
+        tableHtml += createEditableRow('교양필수과목', 'data.result.generalRequired.과목코드', data.result.generalRequired.과목코드.join(', '));
 
         // Alternative Courses
-        tableHtml += `<tr><td colspan="2"><strong>Alternative Courses</strong></td></tr>`;
+        tableHtml += `<tr><td colspan="2"><strong>[AlternativeCourse]</strong></td></tr>`;
         const alternativeCourses = data.result.alternativeCourse.대체과목코드 || {};
         for (const [key, value] of Object.entries(alternativeCourses)) {
             tableHtml += `<tr id="alt-course-${key}">
@@ -361,7 +371,7 @@
         return tableHtml;
     }
 
-    function createEditableRow(label, field, value, isReadOnly = false, type = 'text') {
+    function createEditableRow(label, field, value, isReadOnly = false, type = 'text', isEdit=true) {
         if (type === 'boolean') {
             return `<tr>
                     <td>${label}</td>
@@ -383,56 +393,10 @@
                     <td><input type="text" data-field="${field}" value="${value}" ${isReadOnly ? 'readonly' : ''}></td>
                 </tr>`;
         }
+
     }
 
-    function addAlternativeCore() {
-        const key = document.getElementById('newAltCoreKey').value.trim();
-        const value = document.getElementById('newAltCoreValue').value.trim();
 
-        if (!key || !value) {
-            alert("기준 과목코드와 대체과목 코드를 모두 입력해 주세요.");
-            return;
-        }
-
-        if (confirm("해당 대체 과목을 추가하시겠습니까?")) {
-            const newRow = `<tr id="alt-course-${key}">
-                        <td>기준 과목 코드: <input type="text" data-field="alternativeCore.alternativeCoreMapKey.${key}" value="${key}" onchange="updateKeyCore(this, '${key}')"></td>
-                        <td>대체 과목 코드: <input type="text" data-field="alternativeCore.alternativeCoreMap.${key}" value="${value}"></td>
-                        <td>
-                            <button type="button" onclick="removeAlternativeCore('${key}')">-</button>
-                        </td>
-                      </tr>`;
-
-            document.getElementById('new-alternative-row').insertAdjacentHTML('beforebegin', newRow);
-
-            document.getElementById('newAltCoreKey').value = '';
-            document.getElementById('newAltCoreValue').value = '';
-        }
-    }
-    function addAssignCore() {
-        const key = document.getElementById('newAssignCoreKey').value.trim();
-        const value = document.getElementById('newAssignCoreValue').value.trim();
-
-        if (!key || !value) {
-            alert("기준 과목코드와 대체과목 코드를 모두 입력해 주세요.");
-            return;
-        }
-
-        if (confirm("해당 대체 과목을 추가하시겠습니까?")) {
-            const newRow = `<tr id="alt-course-${key}">
-                        <td>기준 과목 코드: <input type="text" data-field="assignCore.assignCoreMapKey.${key}" value="${key}" onchange="updateKeyCore(this, '${key}')"></td>
-                        <td>대체  코드: <input type="text" data-field="assignCore.assignCoreMap.${key}" value="${value}"></td>
-                        <td>
-                            <button type="button" onclick="removeAssignCore('${key}')">-</button>
-                        </td>
-                      </tr>`;
-
-            document.getElementById('new-alternative-row').insertAdjacentHTML('beforebegin', newRow);
-
-            document.getElementById('newAssignCoreKey').value = '';
-            document.getElementById('newAssignCoreValue').value = '';
-        }
-    }
     // 대체 과목 추가
     function addAlternativeCourse() {
         const key = document.getElementById('newAltCourseKey').value.trim();
@@ -468,22 +432,6 @@
             }
         }
     }
-    function removeAlternativeCoreAssign(key) {
-        if (confirm("해당 대체 과목을 삭제하시겠습니까?")) {
-            const row = document.getElementById(`alt-course-${key}`);
-            if (row) {
-                row.parentNode.removeChild(row);
-            }
-        }
-    }
-    function removeAlternativeCore(key) {
-        if (confirm("해당 대체 과목을 삭제하시겠습니까?")) {
-            const row = document.getElementById(`alt-course-${key}`);
-            if (row) {
-                row.parentNode.removeChild(row);
-            }
-        }
-    }
     // key 값을 지정해 요소 컨트롤
     function updateKey(inputElement, oldKey) {
         const newKey = inputElement.value.trim();
@@ -496,29 +444,6 @@
             }
         }
     }
-    function updateKeyCore(inputElement, oldKey) {
-        const newKey = inputElement.value.trim();
-        if (newKey !== oldKey) {
-            const row = document.getElementById(`alt-course-${oldKey}`);
-            row.id = `alt-course-${newKey}`;
-            const altCourseInput = row.querySelector(`[data-field="alternativeCore.alternativeCourseMap.${oldKey}"]`);
-            if (altCourseInput) {
-                altCourseInput.setAttribute('data-field', `alternativeCore.alternativeCourseMap.${newKey}`);
-            }
-        }
-    }
-    function updateKeyCoreAssign(inputElement, oldKey) {
-        const newKey = inputElement.value.trim();
-        if (newKey !== oldKey) {
-            const row = document.getElementById(`alt-course-${oldKey}`);
-            row.id = `alt-course-${newKey}`;
-            const altCourseInput = row.querySelector(`[data-field="asignCore.asignCoreMap.${oldKey}"]`);
-            if (altCourseInput) {
-                altCourseInput.setAttribute('data-field', `assignCore.assignCoreMap.${newKey}`);
-            }
-        }
-    }
-
 
     function saveCurriculum() {
         const majorType = document.getElementById('newMajorType').value;
@@ -659,61 +584,39 @@
                 value = value ? value.split(',').map(item => item.trim()) : [];
             }
 
-            // 영역별_지정과목 및 영역별_대체과목 처리
-            if (fieldName === '영역별_지정과목' || fieldName === '영역별_대체과목') {
-                const categoryMap = {};
-
-                // 입력된 값을 JSON 형식으로 변환
-                if (value) {
-                    const entries = value.split('\n').map(item => item.trim()); // 줄 바꿈으로 구분된 항목을 배열로 변환
-                    entries.forEach(item => {
-                        const [category, ...courses] = item.split(':');  // "CATEGORY:c1,c2" 형식으로 가정
-                        if (category) {
-                            const cleanedCategory = category.trim(); // 카테고리 정리
-                            const cleanedCourses = courses.join(',').trim().split(',').map(course => course.trim()); // 과목 정리
-
-                            // 카테고리와 과목을 매핑
-                            categoryMap[cleanedCategory] = cleanedCourses;
-                        }
-                    });
-                }
-                currentObj[fieldName] = categoryMap; // 최종적으로 categoryMap을 현재 객체에 할당
-            } else {
                 currentObj[fieldName] = value; // 그 외의 필드는 기존 로직 유지
-            }
+
         });
-        let 영역별_지정과목 ={};
-        document.querySelectorAll('[data-field^="assignCore.assignCoreMap"]').forEach(input => {
-            // 필드명에서 과목 코드(키)를 추출
-            const coreKey = input.getAttribute('data-field').split('.').pop();  // 가장 마지막 요소로 과목 코드 추출
+        let 영역별대체과목코드 = {};
+        document.querySelectorAll('[data-field^="data.result.core.영역별_대체과목."]').forEach(input => {
+            // 필드명에서 카테고리(키)를 추출
+            const categoryKey = input.getAttribute('data-field').split('.').pop(); // 가장 마지막 요소로 카테고리 추출
 
             // 입력값을 배열로 변환
-            const coreValues = input.value.split(',').map(item => item.trim());
+            const courseValues = input.value.split(',').map(item => item.trim());
 
-            // alternativeCourseMap 객체에 키-값 쌍을 추가
-            if (coreKey) {
-                영역별_지정과목[coreKey] = coreValues.length === 1 && coreValues[0] === ""
-                    ? []  // 빈 입력은 빈 배열로 처리
-                    : coreValues;
-            }
+            // 빈 입력은 빈 배열로 처리
+            영역별대체과목코드[categoryKey] = courseValues.length === 1 && courseValues[0] === ""
+                ? []
+                : courseValues;
         });
-        let 영역별_대체과목 ={};
-        document.querySelectorAll('[data-field^="alternativeCore.alternativeCoreMap"]').forEach(input => {
-            // 필드명에서 과목 코드(키)를 추출
-            const coreKey = input.getAttribute('data-field').split('.').pop();  // 가장 마지막 요소로 과목 코드 추출
+        let 영역별지정과목코드 = {};
+        document.querySelectorAll('[data-field^="data.result.core.영역별_지정과목."]').forEach(input => {
+            // 필드명에서 카테고리(키)를 추출
+            const categoryKey = input.getAttribute('data-field').split('.').pop(); // 가장 마지막 요소로 카테고리 추출
 
             // 입력값을 배열로 변환
-            const coreValues = input.value.split(',').map(item => item.trim());
+            const courseValues = input.value.split(',').map(item => item.trim());
 
-            // alternativeCourseMap 객체에 키-값 쌍을 추가
-            if (coreKey) {
-                영역별_대체과목[coreKey] = coreValues.length === 1 && coreValues[0] === ""
-                    ? []  // 빈 입력은 빈 배열로 처리
-                    : coreValues;
-            }
+            // 빈 입력은 빈 배열로 처리
+            영역별지정과목코드[categoryKey] = courseValues.length === 1 && courseValues[0] === ""
+                ? []
+                : courseValues;
         });
+
 // alternativeCourseJson.alternativeCourseMap 처리
         let 대체과목코드 = {};
+        let count = 0;
         document.querySelectorAll('[data-field^="alternativeCourse.alternativeCourseMap"]').forEach(input => {
             // 필드명에서 과목 코드(키)를 추출
             const courseKey = input.getAttribute('data-field').split('.').pop();  // 가장 마지막 요소로 과목 코드 추출
@@ -726,23 +629,24 @@
                 대체과목코드[courseKey] = courseValues.length === 1 && courseValues[0] === ""
                     ? []  // 빈 입력은 빈 배열로 처리
                     : courseValues;
+                if (courseValues.length === 1 && courseValues[0] === "") {
+                    count++; // 빈값일 경우 카운트 증가
+                }
             }
         });
 
-// JSON 객체에 alternativeCourse.alternativeCourseMap 추가
+        if (count > 0) {
+            alert(`대체과목 코드 중 ${count}개의 값이 비어 있습니다. 빈 값을 채워주세요.`);
+            return; // POST 요청을 보내지 않음
+        }
+
         if (!updatedData.alternativeCourse) {
             updatedData.alternativeCourse = {};
         }
         updatedData.alternativeCourse.대체과목코드 = 대체과목코드;
-        if (!updatedData.alternativeCore) {
-            updatedData.alternativeCore = {};
-        }
-        updatedData.core.영역별_대체과목 = 영역별_대체과목;
-        if (!updatedData.assignCore) {
-            updatedData.assignCore = {};
-        }
-        updatedData.core.영역별_지정과목 = 영역별_지정과목;
-//
+        updatedData.core.영역별_지정과목 = 영역별지정과목코드;
+        updatedData.core.영역별_대체과목 = 영역별대체과목코드;
+
         console.log('Updated Data:', JSON.stringify(updatedData, null, 2));
 
         fetch(`/admin/curriculum/save?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
@@ -771,7 +675,7 @@
                  else if (result === "not_found") {
                     alert("데이터가 존재하지 않습니다. 커리큘럼 데이터 저장 화면을 이용하세요.");
                 } else {
-                    alert(result);
+                    alert('취소했습니다');
                 }
             })
             .catch(error => console.error('Error:', error));
