@@ -63,7 +63,8 @@ public class CommonCoreStrategy implements CoreStrategy {
         while (iterator.hasNext()) {
             Take take = iterator.next();
 
-            for (Category area : core.getRequiredAreaSet()) {
+            Set<Category> requiredAreaSet = getRequiredAreaSetWhenHandleAreaAlt(core);
+            for (Category area : requiredAreaSet) {
                 Set<String> areaAlternativeCodeSet = core.getAreaAlternativeCodeSet(area);
 
                 if (GraduationUtils.isApproved(take, areaAlternativeCodeSet)) {
@@ -83,6 +84,13 @@ public class CommonCoreStrategy implements CoreStrategy {
             }
         }
         return areaAltCourseSet;
+    }
+
+    private Set<Category> getRequiredAreaSetWhenHandleAreaAlt(Core core) {
+        if (!core.getIsAreaFixed()) {
+            return GraduationUtils.CORE_CATEGORYSET;
+        }
+        return core.getRequiredAreaSet();
     }
 
     /*

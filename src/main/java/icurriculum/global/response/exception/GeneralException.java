@@ -21,4 +21,15 @@ public class GeneralException extends RuntimeException {
         this.data = data;
     }
 
+    public GeneralException(ErrorStatus errorStatus, Throwable cause) {
+        super(errorStatus.getMessage(), cause);
+        this.errorStatus = errorStatus;
+        this.data = null;
+    }
+
+    public GeneralException(ErrorStatus errorStatus, Object data, Throwable cause) {
+        super(errorStatus.getMessage(), cause);
+        this.errorStatus = errorStatus;
+        this.data = data;
+    }
 }

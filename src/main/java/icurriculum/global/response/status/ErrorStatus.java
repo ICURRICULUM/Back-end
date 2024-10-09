@@ -37,10 +37,12 @@ public enum ErrorStatus {
     CURRICULUM_NOT_VALID_CATEGORY(HttpStatus.BAD_REQUEST, "CURRICULUM402",
         "CurriculumCode 에는 전공필수, 전공선택, 교양필수 조회가능합니다."),
     CORE_NOT_VALID_CATEGORY(HttpStatus.BAD_REQUEST, "CURRICULUM403",
-        "Core 에는 핵심교양만 조회가능합니다."),
-    CURRICULUM_MISSING_VALUE(HttpStatus.BAD_REQUEST, "CURRICULUM404",
+        "Core는 핵심교양만 조회가능합니다."),
+    CORE_INVALID_DATA(HttpStatus.BAD_REQUEST, "CURRICULUM404",
+        "Core의 데이터형식이 올바르지 않습니다."),
+    CURRICULUM_MISSING_VALUE(HttpStatus.BAD_REQUEST, "CURRICULUM405",
         "Curriculum 내부의 필수값이 빠졌습니다."),
-    CURRICULUM_DECIDER_MISSING_VALUE(HttpStatus.BAD_REQUEST, "CURRICULUM405",
+    CURRICULUM_DECIDER_MISSING_VALUE(HttpStatus.BAD_REQUEST, "CURRICULUM406",
         "CurriculumDecider 내부의 필수값이 빠졌습니다."),
 
     /*
