@@ -484,42 +484,6 @@
     }
 
 
-    function compareStructures(expected, actual) {
-        if (typeof expected !== typeof actual) return false;
-
-        if (typeof expected === 'object' && !Array.isArray(expected)) {
-            for (const key in expected) {
-                if (!(key in actual)) return false;
-                if (!compareStructures(expected[key], actual[key])) return false;
-            }
-        } else if (Array.isArray(expected)) {
-            if (!Array.isArray(actual)) return false;
-        }
-
-        return true;
-    }
-    // JSON 내용 유효성 검사 함수
-    function validateJsonContent(data) {
-        // 'requiredCreditJson'의 값 확인
-        if (data.requiredCreditJson.총이수 <= 0) return false;
-
-        // 'curriculumCodesJson'에 최소한 하나의 항목이 있어야 함
-        const curriculumCodes = data.curriculumCodesJson.교과과정;
-        if (
-            !Array.isArray(curriculumCodes.전공필수) || curriculumCodes.전공필수.length === 0 ||
-            !Array.isArray(curriculumCodes.전공선택) || curriculumCodes.전공선택.length === 0 ||
-            !Array.isArray(curriculumCodes.교양필수) || curriculumCodes.교양필수.length === 0
-        ) {
-            return false;
-        }
-
-        // 'coreJson'에 필수영역이 있어야 함
-        if (!Array.isArray(data.coreJson.필수영역) || data.coreJson.필수영역.length === 0) {
-            return false;
-        }
-
-        return true;
-    }
     function loadJsonFile() {
         const fileInput = document.getElementById('jsonFile');
         const file = fileInput.files[0];
