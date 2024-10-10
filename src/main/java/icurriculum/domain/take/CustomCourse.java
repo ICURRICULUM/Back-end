@@ -16,7 +16,7 @@ import lombok.ToString;
 public class CustomCourse {
 
     @Column(name = "custom_code")
-    private String code;
+    private final String code = "CUSTOM";
 
     @Column(name = "custom_name")
     private String name;
@@ -25,8 +25,7 @@ public class CustomCourse {
     private Integer credit;
 
     @Builder
-    private CustomCourse(String code, String name, Integer credit) {
-        this.code = code;
+    private CustomCourse(String name, Integer credit) {
         this.name = name;
         this.credit = credit;
     }

@@ -2,6 +2,8 @@ package icurriculum.domain.graduation.service.module.processor.creativity.strate
 
 import icurriculum.domain.curriculum.data.AlternativeCourse;
 import icurriculum.domain.curriculum.data.Creativity;
+import icurriculum.domain.graduation.service.module.processor.creativity.CreativityResult;
+import icurriculum.domain.graduation.service.module.processor.dto.ProcessorConverter;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorResponse;
 import icurriculum.domain.take.Category;
@@ -24,30 +26,30 @@ public class CommonCreativityStrategy implements CreativityStrategy {
         ProcessorRequest.CreativityDTO request,
         LinkedList<Take> allTakeList
     ) {
-        ProcessorResponse.CreativityDTO response = new ProcessorResponse.CreativityDTO();
+        CreativityResult result = new CreativityResult();
 
-        handleResponse(
+        handleResult(
             allTakeList,
             request.creativity(),
             request.alternativeCourse(),
-            response
+            result
         );
 
-        return response;
+        return ProcessorConverter.to(result);
     }
 
-    private void handleResponse(
+    private void handleResult(
         LinkedList<Take> allTakeList,
         Creativity creativity,
         AlternativeCourse alternativeCourse,
-        ProcessorResponse.CreativityDTO response
+        CreativityResult result
     ) {
         Iterator<Take> iterator = allTakeList.iterator();
         while (iterator.hasNext()) {
             Take take = iterator.next();
 
             if (GraduationUtils.isApprovedCategory(take, Category.창의)) {
-                response.update(take, iterator);
+                result.update(take, iterator);
                 continue;
             }
 
@@ -56,12 +58,12 @@ public class CommonCreativityStrategy implements CreativityStrategy {
                 creativity.getApprovedCodeSet(),
                 alternativeCourse
             )) {
-                response.update(take, iterator);
+                result.update(take, iterator);
             }
         }
 
-        response.setRequiredCredit(creativity);
-        response.checkIsClear();
+        result.setRequiredCredit(creativity);
+        result.checkIsClear();
     }
 
 }

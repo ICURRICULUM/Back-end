@@ -3,6 +3,8 @@ package icurriculum.domain.graduation.service.module.processor.core.strategy;
 import icurriculum.domain.course.Course;
 import icurriculum.domain.curriculum.data.AlternativeCourse;
 import icurriculum.domain.curriculum.data.Core;
+import icurriculum.domain.graduation.service.module.processor.core.CoreResult;
+import icurriculum.domain.graduation.service.module.processor.dto.ProcessorConverter;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorResponse;
 import icurriculum.domain.take.Category;
@@ -30,16 +32,25 @@ public class CommonCoreStrategy implements CoreStrategy {
         ProcessorRequest.CoreDTO request,
         LinkedList<Take> allTakeList
     ) {
-        ProcessorResponse.CoreDTO response = new ProcessorResponse.CoreDTO();
-        response.initUncompletedArea(request.core());
+        CoreResult result = new CoreResult();
+        result.initUncompletedArea(request.core());
 
         // 영역 대체 과목
-        Set<Course> areaAltCourseSet = handleAreaAlternative(allTakeList, request.core(),
-            request.alternativeCourse(), response);
+        Set<Course> areaAltCourseSet = handleAreaAlternative(
+            allTakeList,
+            request.core(),
+            request.alternativeCourse(),
+            result
+        );
 
-        handleResponse(request.core(), allTakeList, areaAltCourseSet, response);
+        handleResult(
+            request.core(),
+            allTakeList,
+            areaAltCourseSet,
+            result
+        );
 
-        return response;
+        return ProcessorConverter.to(result);
     }
 
 
@@ -55,7 +66,7 @@ public class CommonCoreStrategy implements CoreStrategy {
         LinkedList<Take> allTakeList,
         Core core,
         AlternativeCourse alternativeCourse,
-        ProcessorResponse.CoreDTO response
+        CoreResult result
     ) {
         Set<Course> areaAltCourseSet = new HashSet<>();
 
@@ -68,7 +79,7 @@ public class CommonCoreStrategy implements CoreStrategy {
                 Set<String> areaAlternativeCodeSet = core.getAreaAlternativeCodeSet(area);
 
                 if (GraduationUtils.isApproved(take, areaAlternativeCodeSet)) {
-                    response.update(take, iterator, area, true);
+                    result.update(take, iterator, area, true);
                     areaAltCourseSet.add(take.getEffectiveCourse());
                     continue;
                 }
@@ -78,7 +89,7 @@ public class CommonCoreStrategy implements CoreStrategy {
                     areaAlternativeCodeSet,
                     alternativeCourse)
                 ) {
-                    response.update(take, iterator, area, true);
+                    result.update(take, iterator, area, true);
                     areaAltCourseSet.add(take.getEffectiveCourse());
                 }
             }
@@ -96,13 +107,13 @@ public class CommonCoreStrategy implements CoreStrategy {
     /*
      * [core logic]
      * - 영역 대체를 통해서 이미 계산된 과목은 건너뛴다.
-     * - 핵심교양으로 인정되는 과목은 LinkedList에서 삭제하고, response를 업데이트한다.
+     * - 핵심교양으로 인정되는 과목은 LinkedList에서 삭제하고, result 를 업데이트한다.
      */
-    private void handleResponse(
+    private void handleResult(
         Core core,
         LinkedList<Take> allTakeList,
         Set<Course> areaAltCourseSet,
-        ProcessorResponse.CoreDTO response
+        CoreResult result
     ) {
         Iterator<Take> iterator = allTakeList.iterator();
         while (iterator.hasNext()) {
@@ -113,12 +124,12 @@ public class CommonCoreStrategy implements CoreStrategy {
             }
 
             if (isCategoryApprovedToCore(take.getCategory(), core)) {
-                response.update(take, iterator, take.getCategory(), false);
+                result.update(take, iterator, take.getCategory(), false);
             }
         }
 
-        response.setRequiredCredit(core);
-        response.checkIsClear(core);
+        result.setRequiredCredit(core);
+        result.checkIsClear(core);
     }
 
     private boolean isCategoryApprovedToCore(Category category, Core core) {

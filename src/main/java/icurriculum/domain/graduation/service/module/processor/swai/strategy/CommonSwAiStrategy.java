@@ -3,8 +3,10 @@ package icurriculum.domain.graduation.service.module.processor.swai.strategy;
 import icurriculum.domain.course.Course;
 import icurriculum.domain.curriculum.data.AlternativeCourse;
 import icurriculum.domain.curriculum.data.SwAi;
+import icurriculum.domain.graduation.service.module.processor.dto.ProcessorConverter;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorResponse;
+import icurriculum.domain.graduation.service.module.processor.swai.SwAiResult;
 import icurriculum.domain.take.Category;
 import icurriculum.domain.take.Take;
 import icurriculum.global.util.GraduationUtils;
@@ -27,13 +29,20 @@ public class CommonSwAiStrategy implements SwAiStrategy {
         ProcessorRequest.SwAiDTO request,
         LinkedList<Take> allTakeList
     ) {
-        ProcessorResponse.SwAiDTO response = new ProcessorResponse.SwAiDTO();
+        SwAiResult result = new SwAiResult();
 
         // 영역 대체 과목
         Set<Course> areaAltCourseSet = handleAreaAlternative(allTakeList, request.swAi(),
-            request.alternativeCourse(), response);
+            request.alternativeCourse(), result);
 
-        return createResponse(request.swAi(), allTakeList, areaAltCourseSet, response);
+        handleResult(
+            request.swAi(),
+            allTakeList,
+            areaAltCourseSet,
+            result
+        );
+
+        return ProcessorConverter.to(result);
     }
 
     /*
@@ -48,7 +57,7 @@ public class CommonSwAiStrategy implements SwAiStrategy {
         LinkedList<Take> allTakeList,
         SwAi swAi,
         AlternativeCourse alternativeCourse,
-        ProcessorResponse.SwAiDTO response
+        SwAiResult result
     ) {
         Set<Course> areaAltCourseSet = new HashSet<>();
 
@@ -57,7 +66,7 @@ public class CommonSwAiStrategy implements SwAiStrategy {
             Take take = iterator.next();
 
             if (GraduationUtils.isApproved(take, swAi.getAreaAlternativeCodeSet())) {
-                response.update(take, iterator, true);
+                result.update(take, iterator, true);
                 areaAltCourseSet.add(take.getEffectiveCourse());
                 continue;
             }
@@ -67,7 +76,7 @@ public class CommonSwAiStrategy implements SwAiStrategy {
                 swAi.getAreaAlternativeCodeSet(),
                 alternativeCourse)
             ) {
-                response.update(take, iterator, true);
+                result.update(take, iterator, true);
                 areaAltCourseSet.add(take.getEffectiveCourse());
             }
         }
@@ -75,11 +84,11 @@ public class CommonSwAiStrategy implements SwAiStrategy {
         return areaAltCourseSet;
     }
 
-    private ProcessorResponse.SwAiDTO createResponse(
+    private void handleResult(
         SwAi swAi,
         LinkedList<Take> allTakeList,
         Set<Course> areaAltCourseSet,
-        ProcessorResponse.SwAiDTO response
+        SwAiResult result
     ) {
         Iterator<Take> iterator = allTakeList.iterator();
         while (iterator.hasNext()) {
@@ -90,14 +99,12 @@ public class CommonSwAiStrategy implements SwAiStrategy {
             }
 
             if (GraduationUtils.isApprovedCategory(take, Category.SW_AI)) {
-                response.update(take, iterator, false);
+                result.update(take, iterator, false);
             }
         }
 
-        response.setRequiredCredit(swAi);
-        response.checkIsClear();
-
-        return response;
+        result.setRequiredCredit(swAi);
+        result.checkIsClear();
     }
 
 }

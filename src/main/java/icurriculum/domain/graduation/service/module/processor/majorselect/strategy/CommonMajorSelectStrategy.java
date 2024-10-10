@@ -1,9 +1,11 @@
 package icurriculum.domain.graduation.service.module.processor.majorselect.strategy;
 
 import icurriculum.domain.curriculum.data.AlternativeCourse;
+import icurriculum.domain.graduation.service.module.processor.dto.ProcessorConverter;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorRequest.CreditWithData;
 import icurriculum.domain.graduation.service.module.processor.dto.ProcessorResponse;
+import icurriculum.domain.graduation.service.module.processor.majorselect.MajorSelectResult;
 import icurriculum.domain.take.Category;
 import icurriculum.domain.take.Take;
 import icurriculum.global.util.GraduationUtils;
@@ -27,24 +29,24 @@ public class CommonMajorSelectStrategy implements MajorSelectStrategy {
         ProcessorRequest.MajorSelectDTO request,
         LinkedList<Take> allTakeList
     ) {
-        ProcessorResponse.MajorSelectDTO response = new ProcessorResponse.MajorSelectDTO();
-        response.initMajorSelectResponse(request.creditWithData());
+        MajorSelectResult result = new MajorSelectResult();
+        result.initMajorSelectResult(request.creditWithData());
 
-        handleResponse(
+        handleResult(
             allTakeList,
             request.creditWithData(),
             request.alternativeCourse(),
-            response
+            result
         );
 
-        return response;
+        return ProcessorConverter.to(result);
     }
 
-    private void handleResponse(
+    private void handleResult(
         LinkedList<Take> allTakeList,
         CreditWithData creditWithData,
         AlternativeCourse alternativeCourse,
-        ProcessorResponse.MajorSelectDTO response
+        MajorSelectResult result
     ) {
         Set<String> majorSelectCodeSet = creditWithData.majorSelect().getCodeSet();
 
@@ -53,7 +55,7 @@ public class CommonMajorSelectStrategy implements MajorSelectStrategy {
             Take take = iterator.next();
 
             if (isCategoryGeneralRequired(take, majorSelectCodeSet)) {
-                response.update(take, iterator);
+                result.update(take, iterator);
                 continue;
             }
 
@@ -62,11 +64,11 @@ public class CommonMajorSelectStrategy implements MajorSelectStrategy {
                 majorSelectCodeSet,
                 alternativeCourse)
             ) {
-                response.update(take, iterator);
+                result.update(take, iterator);
             }
         }
 
-        response.checkIsClear();
+        result.checkIsClear();
     }
 
     /*

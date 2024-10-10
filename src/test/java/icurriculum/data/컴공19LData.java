@@ -352,7 +352,6 @@ public class 컴공19LData {
                 .customCourse(
                     CustomCourse.builder()
                         .credit(6)
-                        .code("CUSTOM")
                         .name("현장실습 6")
                         .build()
                 )
@@ -366,7 +365,6 @@ public class 컴공19LData {
                 .customCourse(
                     CustomCourse.builder()
                         .credit(18)
-                        .code("CUSTOM")
                         .name("현장실습 18")
                         .build())
                 .member(member).build()
@@ -408,14 +406,14 @@ public class 컴공19LData {
     public SwAi getSwAiJsonData() {
         return SwAi.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 
     public Creativity getCreativityJsonData() {
         return Creativity.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 

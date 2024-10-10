@@ -50,7 +50,6 @@ class TakeServiceTest {
             .build();
 
         customCourse = CustomCourse.builder()
-            .code("CUSTOM")
             .name("현장실습 18")
             .credit(18)
             .build();

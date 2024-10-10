@@ -378,7 +378,6 @@ public class 컴공18LData {
                 .customCourse(
                     CustomCourse.builder()
                         .name("IPP 현장실습")
-                        .code("CUSTOM")
                         .credit(12)
                         .build()
                 )
@@ -426,14 +425,14 @@ public class 컴공18LData {
     public SwAi getSwAiJsonData() {
         return SwAi.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 
     public Creativity getCreativityJsonData() {
         return Creativity.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 

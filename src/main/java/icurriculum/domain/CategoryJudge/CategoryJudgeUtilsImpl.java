@@ -1,3 +1,4 @@
+/*
 package icurriculum.domain.categoryjudge;
 
 import icurriculum.domain.curriculum.Curriculum;
@@ -56,11 +57,13 @@ public class CategoryJudgeUtilsImpl implements CategoryJudgeUtils {
         return judgeCodes;
     }
 
-    /**
+    */
+/**
      * 사용자 핵심교양 판별 메서드
      *
      * @return 핵심교양 영역
-     **/
+     **//*
+
     public Category judgeCore(String code, Curriculum curriculum) {
 
         CoreJson coreJson = curriculum.getCoreJson(); // 핵심교양
@@ -130,9 +133,11 @@ public class CategoryJudgeUtilsImpl implements CategoryJudgeUtils {
 
 
     public Category judgeAlternative(Set<String> codes, Curriculum curriculum) {
-        /**
+        */
+/**
          * @params codes : 해당과목의 대체가능한 과목들
-         */
+         *//*
+
         CurriculumCodesJson curriculumCodesJson = curriculum.getCurriculumCodesJson(); // 교과과정
 
         Set<String> eMajor = curriculumCodesJson.findCodesByCategory(Category.전공필수);
@@ -167,3 +172,4 @@ public class CategoryJudgeUtilsImpl implements CategoryJudgeUtils {
     }
 
 }
+*/

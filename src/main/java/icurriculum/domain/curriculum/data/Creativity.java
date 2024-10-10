@@ -60,10 +60,13 @@ public class Creativity {
 
     public void validate() {
         if (requiredCredit == null) {
-            throw new GeneralException(ErrorStatus.CURRICULUM_MISSING_VALUE, this);
+            throw new GeneralException(ErrorStatus.CREATIVITY_INVALID_DATA, this);
         }
-        if (approvedCodeSet.isEmpty()) {
-            throw new GeneralException(ErrorStatus.CURRICULUM_MISSING_VALUE, this);
+        if (requiredCredit.equals(0) && !approvedCodeSet.isEmpty()) {
+            throw new GeneralException(ErrorStatus.CREATIVITY_INVALID_DATA, this);
+        }
+        if (!requiredCredit.equals(0) && approvedCodeSet.isEmpty()) {
+            throw new GeneralException(ErrorStatus.CREATIVITY_INVALID_DATA, this);
         }
     }
 }

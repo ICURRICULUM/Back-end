@@ -353,13 +353,13 @@ public class 컴퓨터공학과DataInitializer {
             // 2023학년도 동계학기
             Take.builder().category(교양선택).takenYear("2023").takenSemester("동계").majorType(주전공)
                 .customCourse(
-                    CustomCourse.builder().code("AAO9017").name("현장실습 6").credit(6).build())
+                    CustomCourse.builder().name("현장실습 6").credit(6).build())
                 .member(member).build(),
 
             // 2024학년도 1학기
             Take.builder().category(전공선택).takenYear("2024").takenSemester("1").majorType(주전공)
                 .customCourse(
-                    CustomCourse.builder().code("CSE9318").name("현장실습 19").credit(18).build())
+                    CustomCourse.builder().name("현장실습 18").credit(18).build())
                 .member(member)
                 .build()
         );

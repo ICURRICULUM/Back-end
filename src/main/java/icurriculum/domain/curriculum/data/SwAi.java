@@ -71,8 +71,14 @@ public class SwAi {
     }
 
     public void validate() {
-        if (approvedCodeSet.isEmpty() || requiredCredit == null) {
-            throw new GeneralException(ErrorStatus.CURRICULUM_MISSING_VALUE, this);
+        if (requiredCredit == null) {
+            throw new GeneralException(ErrorStatus.SW_AI_INVALID_DATA, this);
+        }
+        if (requiredCredit.equals(0) && !approvedCodeSet.isEmpty()) {
+            throw new GeneralException(ErrorStatus.SW_AI_INVALID_DATA, this);
+        }
+        if (!requiredCredit.equals(0) && approvedCodeSet.isEmpty()) {
+            throw new GeneralException(ErrorStatus.SW_AI_INVALID_DATA, this);
         }
     }
 

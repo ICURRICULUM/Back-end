@@ -323,7 +323,7 @@ public class 컴공22SData {
     public SwAi getSwAiJsonData() {
         return SwAi.builder()
             .requiredCredit(0)
-            .approvedCodeSet(Set.of("DUMMY"))
+            .approvedCodeSet(Set.of())
             .build();
     }
 
