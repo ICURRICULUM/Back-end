@@ -112,7 +112,6 @@
 
     <label for="joinYear">기준 년도</label>
     <select id="joinYear" name="joinYear" required>
-        <option value="" disabled selected>2018</option> <!-- 기본 선택 항목 -->
         <option value="2018">2018</option>
         <option value="2019">2019</option>
         <option value="2020">2020</option>
@@ -213,7 +212,6 @@
 
     <label for="newJoinYear">기준 년도</label>
     <select id="newJoinYear" name="joinYear" required>
-        <option value="" disabled selected>2018</option> <!-- 기본 선택 항목 -->
         <option value="2018">2018</option>
         <option value="2019">2019</option>
         <option value="2020">2020</option>
@@ -308,12 +306,6 @@
         tableHtml += createEditableRow('필수영역', 'data.result.core.필수영역', data.result.core.필수영역.join(', '));
 
         const categories = [
-            "전공필수",
-            "전공선택",
-            "교양필수",
-            "교양선택",
-            "SW_AI",
-            "창의",
             "핵심교양1",
             "핵심교양2",
             "핵심교양3",
@@ -477,9 +469,9 @@
                     },
                     body: curriculumData
                 })
-                    .then(response => response.text())
+                    .then(response => response.json())
                     .then(data => {
-                        alert(data);
+                        alert(data.result);
                     })
                     .catch(error => console.error('Error:', error));
 
