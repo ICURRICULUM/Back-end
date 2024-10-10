@@ -34,7 +34,6 @@ public class TakeTest {
 
         customCourse = CustomCourse.builder()
             .name("현장실습 18")
-            .code("CUSTOM")
             .credit(18)
             .build();
     }

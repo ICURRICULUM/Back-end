@@ -30,7 +30,7 @@ public class CommonMajorSelectStrategy implements MajorSelectStrategy {
         LinkedList<Take> allTakeList
     ) {
         MajorSelectResult result = new MajorSelectResult();
-        result.initMajorSelectResponse(request.creditWithData());
+        result.initMajorSelectResult(request.creditWithData());
 
         handleResult(
             allTakeList,

@@ -107,7 +107,7 @@ public class CommonCoreStrategy implements CoreStrategy {
     /*
      * [core logic]
      * - 영역 대체를 통해서 이미 계산된 과목은 건너뛴다.
-     * - 핵심교양으로 인정되는 과목은 LinkedList에서 삭제하고, response를 업데이트한다.
+     * - 핵심교양으로 인정되는 과목은 LinkedList에서 삭제하고, result 를 업데이트한다.
      */
     private void handleResult(
         Core core,

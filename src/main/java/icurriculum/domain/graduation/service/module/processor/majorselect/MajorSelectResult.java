@@ -14,7 +14,7 @@ public class MajorSelectResult {
     private int totalMajorRequiredCredit; // 전공(전공선택 + 전공필수) 필요학점
     private boolean isClear; // 조건 충족 여부
 
-    public void initMajorSelectResponse(CreditWithData creditWithData) {
+    public void initMajorSelectResult(CreditWithData creditWithData) {
         totalMajorCompletedCredit += creditWithData.majorRequiredCompletedCredit();
         totalMajorRequiredCredit += creditWithData.majorNeedCredit();
     }
