@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Curriculum 관리 페이지</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        #curriculum-result input {
+            width: calc(100% - 20px); /* 너비 설정 */
+            padding: 15px; /* 패딩 증가 */
+            min-height: 50px; /* 최소 높이 설정 */
+            font-size: 1.2rem; /* 글자 크기 증가 */
+            border-radius: 4px; /* 테두리 둥글게 */
+            margin-bottom: 15px; /* 아래쪽 여백 추가 */
+        }
+
+        #curriculum-result strong {
+            display: block; /* 블록 요소로 설정 */
+            text-align: center; /* 가운데 정렬 */
+            margin-top: 10px; /* 위쪽 여백 추가 (선택적) */
+        }
+    </style>
+
+</head>
+<body>
+<a href="/admin">뒤로가기</a> <br>
+
+<h1>Curriculum 관리 페이지</h1><br><br>
+
+<h2>Curriculum 조회하기</h2>
+<!-- 커리큘럼 조회 폼 -->
+<form id="curriculum-form" onsubmit="loadCurriculum(); return false;">
+    <label for="majorType">전공 상태:</label>
+    <select id="majorType" name="majorType">
+        <option value="주전공">주전공</option>
+        <option value="부전공">부전공</option>
+    </select><br><br>
+
+    <label for="departmentName">학과 이름:</label>
+    <select id="departmentName" name="departmentName">
+        <option value="기계공학과">기계공학과</option>
+        <option value="항공우주공학과">항공우주공학과</option>
+        <option value="조선해양공학과">조선해양공학과</option>
+        <option value="산업경영공학과">산업경영공학과</option>
+        <option value="화학공학과">화학공학과</option>
+        <option value="고분자공학과">고분자공학과</option>
+        <option value="신소재공학과">신소재공학과</option>
+        <option value="사회인프라공학과">사회인프라공학과</option>
+        <option value="환경공학과">환경공학과</option>
+        <option value="공간정보공학과">공간정보공학과</option>
+        <option value="에너지자원공학과">에너지자원공학과</option>
+        <option value="전기공학과">전기공학과</option>
+        <option value="정보통신공학과">정보통신공학과</option>
+        <option value="반도체시스템공학과">반도체시스템공학과</option>
+        <option value="수학과">수학과</option>
+        <option value="통계학과">통계학과</option>
+        <option value="물리학과">물리학과</option>
+        <option value="화학과">화학과</option>
+        <option value="해양과학과">해양과학과</option>
+        <option value="식품영양학과">식품영양학과</option>
+        <option value="경영학과">경영학과</option>
+        <option value="글로벌금융학과">글로벌금융학과</option>
+        <option value="아태물류학부">아태물류학부</option>
+        <option value="국제통상학과">국제통상학과</option>
+        <option value="국어교육과">국어교육과</option>
+        <option value="영어교육과">영어교육과</option>
+        <option value="사회교육과">사회교육과</option>
+        <option value="체육교육과">체육교육과</option>
+        <option value="교육학과">교육학과</option>
+        <option value="수학교육과">수학교육과</option>
+        <option value="행정학과">행정학과</option>
+        <option value="정치외교학과">정치외교학과</option>
+        <option value="경제학과">경제학과</option>
+        <option value="소비자학과">소비자학과</option>
+        <option value="아동심리학과">아동심리학과</option>
+        <option value="사회복지학과">사회복지학과</option>
+        <option value="미디어커뮤니케이션학과">미디어커뮤니케이션학과</option>
+        <option value="한국어문학과">한국어문학과</option>
+        <option value="사학과">사학과</option>
+        <option value="철학과">철학과</option>
+        <option value="중국학과">중국학과</option>
+        <option value="일본언어문화학과">일본언어문화학과</option>
+        <option value="영어영문학과">영어영문학과</option>
+        <option value="프랑스언어문화학과">프랑스언어문화학과</option>
+        <option value="문화콘텐츠문화경영학과">문화콘텐츠문화경영학과</option>
+        <option value="소프트웨어융합공학과">소프트웨어융합공학과</option>
+        <option value="산업경영학과">산업경영학과</option>
+        <option value="메카트로닉스공학과">메카트로닉스공학과</option>
+        <option value="금융투자학과">금융투자학과</option>
+        <option value="반도체산업융합학과">반도체산업융합학과</option>
+        <option value="조형예술학과">조형예술학과</option>
+        <option value="디자인융합학과">디자인융합학과</option>
+        <option value="스포츠과학과">스포츠과학과</option>
+        <option value="연극영화학과">연극영화학과</option>
+        <option value="의류디자인학과">의류디자인학과</option>
+        <option value="컴퓨터공학과">컴퓨터공학과</option>
+        <option value="인공지능공학과">인공지능공학과</option>
+        <option value="데이터사이언스학과">데이터사이언스학과</option>
+        <option value="스마트모빌리티공학과">스마트모빌리티공학과</option>
+        <option value="디자인테크놀로지학과">디자인테크놀로지학과</option>
+        <option value="IBT학과">IBT학과</option>
+        <option value="ISE학과">ISE학과</option>
+        <option value="KLC학과">KLC학과</option>
+        <option value="법학과목">법학과목</option>
+        <option value="간호학과">간호학과</option>
+        <option value="자유전공학부">자유전공학부</option>
+        <option value="생명공학과">생명공학과</option>
+        <option value="생명과학과">생명과학과</option>
+        <option value="바이오제약공학과">바이오제약공학과</option>
+    </select><br><br>
+
+
+    <label for="joinYear">기준 년도</label>
+    <select id="joinYear" name="joinYear" required>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+    </select><br><br>
+
+    <button type="submit">커리큘럼 조회하기</button>
+</form>
+
+<div id="curriculum-result" style="margin-top: 20px;">
+    <!-- 조회된 커리큘럼 정보가 여기 표시됩니다 -->
+</div>
+<br>
+<h2>새로운 Curriculum 등록하기</h2>
+<form id="curriculum-add-form" onsubmit="saveCurriculum(); return false;">
+    <label for="newMajorType">전공 상태</label>
+    <select id="newMajorType" name="majorType">
+        <option value="주전공">주전공</option>
+        <option value="부전공">부전공</option>
+    </select><br><br>
+
+    <label for="newDepartmentName">학과 이름:</label>
+    <select id="newDepartmentName" name="departmentName">
+        <option value="기계공학과">기계공학과</option>
+        <option value="항공우주공학과">항공우주공학과</option>
+        <option value="조선해양공학과">조선해양공학과</option>
+        <option value="산업경영공학과">산업경영공학과</option>
+        <option value="화학공학과">화학공학과</option>
+        <option value="고분자공학과">고분자공학과</option>
+        <option value="신소재공학과">신소재공학과</option>
+        <option value="사회인프라공학과">사회인프라공학과</option>
+        <option value="환경공학과">환경공학과</option>
+        <option value="공간정보공학과">공간정보공학과</option>
+        <option value="에너지자원공학과">에너지자원공학과</option>
+        <option value="전기공학과">전기공학과</option>
+        <option value="정보통신공학과">정보통신공학과</option>
+        <option value="반도체시스템공학과">반도체시스템공학과</option>
+        <option value="수학과">수학과</option>
+        <option value="통계학과">통계학과</option>
+        <option value="물리학과">물리학과</option>
+        <option value="화학과">화학과</option>
+        <option value="해양과학과">해양과학과</option>
+        <option value="식품영양학과">식품영양학과</option>
+        <option value="경영학과">경영학과</option>
+        <option value="글로벌금융학과">글로벌금융학과</option>
+        <option value="아태물류학부">아태물류학부</option>
+        <option value="국제통상학과">국제통상학과</option>
+        <option value="국어교육과">국어교육과</option>
+        <option value="영어교육과">영어교육과</option>
+        <option value="사회교육과">사회교육과</option>
+        <option value="체육교육과">체육교육과</option>
+        <option value="교육학과">교육학과</option>
+        <option value="수학교육과">수학교육과</option>
+        <option value="행정학과">행정학과</option>
+        <option value="정치외교학과">정치외교학과</option>
+        <option value="경제학과">경제학과</option>
+        <option value="소비자학과">소비자학과</option>
+        <option value="아동심리학과">아동심리학과</option>
+        <option value="사회복지학과">사회복지학과</option>
+        <option value="미디어커뮤니케이션학과">미디어커뮤니케이션학과</option>
+        <option value="한국어문학과">한국어문학과</option>
+        <option value="사학과">사학과</option>
+        <option value="철학과">철학과</option>
+        <option value="중국학과">중국학과</option>
+        <option value="일본언어문화학과">일본언어문화학과</option>
+        <option value="영어영문학과">영어영문학과</option>
+        <option value="프랑스언어문화학과">프랑스언어문화학과</option>
+        <option value="문화콘텐츠문화경영학과">문화콘텐츠문화경영학과</option>
+        <option value="소프트웨어융합공학과">소프트웨어융합공학과</option>
+        <option value="산업경영학과">산업경영학과</option>
+        <option value="메카트로닉스공학과">메카트로닉스공학과</option>
+        <option value="금융투자학과">금융투자학과</option>
+        <option value="반도체산업융합학과">반도체산업융합학과</option>
+        <option value="조형예술학과">조형예술학과</option>
+        <option value="디자인융합학과">디자인융합학과</option>
+        <option value="스포츠과학과">스포츠과학과</option>
+        <option value="연극영화학과">연극영화학과</option>
+        <option value="의류디자인학과">의류디자인학과</option>
+        <option value="컴퓨터공학과">컴퓨터공학과</option>
+        <option value="인공지능공학과">인공지능공학과</option>
+        <option value="데이터사이언스학과">데이터사이언스학과</option>
+        <option value="스마트모빌리티공학과">스마트모빌리티공학과</option>
+        <option value="디자인테크놀로지학과">디자인테크놀로지학과</option>
+        <option value="IBT학과">IBT학과</option>
+        <option value="ISE학과">ISE학과</option>
+        <option value="KLC학과">KLC학과</option>
+        <option value="법학과목">법학과목</option>
+        <option value="간호학과">간호학과</option>
+        <option value="자유전공학부">자유전공학부</option>
+        <option value="생명공학과">생명공학과</option>
+        <option value="생명과학과">생명과학과</option>
+        <option value="바이오제약공학과">바이오제약공학과</option>
+    </select><br><br>
+
+
+    <label for="newJoinYear">기준 년도</label>
+    <select id="newJoinYear" name="joinYear" required>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+    </select><br><br>
+
+    <label for="curriculumData">커리큘럼 데이터 (JSON)</label><br>
+    <textarea id="curriculumData" name="curriculumData" rows="10" cols="50"></textarea><br><br>
+
+    <!-- JSON 파일 업로드 필드 추가 -->
+    <label for="jsonFile">JSON 파일 업로드</label><br>
+    <input type="file" id="jsonFile" accept=".json" onchange="loadJsonFile()"><br><br>
+
+    <!-- 크롤링 API 호출 버튼 추가 -->
+    <button id="jsonCrawler" type="button" onclick="loadJsonCrawler()">크롤링 API 호출</button><br><br>
+
+    <button type="submit">커리큘럼 등록하기</button>
+</form>
+
+<script>
+    function loadCurriculum() {
+        const majorType = document.getElementById('majorType').value;
+        const departmentName = document.getElementById('departmentName').value;
+        const joinYear = document.getElementById('joinYear').value;
+
+        // 필수 입력 체크
+        if (majorType && departmentName && joinYear) {
+            const url = `/admin/curriculum/load?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`;
+
+            fetch(url, { method: 'GET' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("data =  ",data)
+
+                    if (data.isSuccess === false) {
+                        alert(data.message);
+
+                    }else{
+                        console.log("Loaded Curriculum Data: ", data);
+                        document.getElementById('curriculum-result').innerHTML = generateCurriculumTable(data);
+                    }
+
+
+                })
+                .catch(error => {
+                    console.error('Error fetching curriculum data:', error);
+                    alert("전공상태, 학과, 기준년도에 따른 커리큘럼이 존재하지 않습니다.");
+                });
+        } else {
+            alert('전공 상태, 학과 이름, 그리고 기준 년도를 모두 입력해주세요.');
+        }
+    }
+
+    // 커리큘럼 테이블 생성 함수
+    function generateCurriculumTable(data) {
+
+        let tableHtml = `<h3>Curriculum Data:</h3>`;
+        tableHtml += `<table border="1" cellpadding="5" cellspacing="0">
+                    <tr>
+                        <th>Category</th>
+                        <th>Details</th>
+                    </tr>`;
+
+        // decider 정보 접근
+        tableHtml += `<tr><td colspan="2"><strong>[Decider]</strong></td></tr>`;
+        tableHtml += `<tr>
+                    <td>전공 상태</td>
+                    <td>${data.result.decider.majorType}</td>
+                </tr>`;
+        tableHtml += `<tr>
+                    <td>학과 이름</td>
+                    <td>${data.result.decider.departmentName}</td>
+                </tr>`;
+        tableHtml += `<tr>
+                    <td>입학 년도</td>
+                    <td>${data.result.decider.joinYear}</td>
+                </tr>`;
+
+
+        // Core Subjects
+        tableHtml += `<tr><td colspan="2"><strong>[Core]</strong></td></tr>`;
+        tableHtml += createEditableRow('영역_지정여부', 'data.result.core.영역_지정여부', data.result.core.영역_지정여부, false, 'boolean');
+        tableHtml += createEditableRow('요구학점', 'data.result.core.요구학점', data.result.core.요구학점);
+        tableHtml += createEditableRow('필수영역', 'data.result.core.필수영역', data.result.core.필수영역.join(', '));
+
+        const categories = [
+            "핵심교양1",
+            "핵심교양2",
+            "핵심교양3",
+            "핵심교양4",
+            "핵심교양5",
+            "핵심교양6"
+        ];
+
+        tableHtml += `<tr><td colspan="2"><strong>영역별_대체과목</strong></td></tr>`;
+        const areaAlternativeCodeMap = data.result.core.영역별_대체과목 || {};
+        categories.forEach(category => {
+            const value = areaAlternativeCodeMap[category] ? areaAlternativeCodeMap[category].join(', ') : '';
+            tableHtml += createEditableRow(category, `data.result.core.영역별_대체과목.${category}`, value, false);
+        });
+        tableHtml += `<tr><td colspan="2"><strong>영역별_지정과목</strong></td></tr>`;
+        const areaAssignCodeMap = data.result.core.영역별_지정과목 || {};
+        categories.forEach(category => {
+            const value = areaAssignCodeMap[category] ? areaAssignCodeMap[category].join(', ') : '';
+            tableHtml += createEditableRow(category, `data.result.core.영역별_지정과목.${category}`, value, false);
+        });
+
+
+        // SW AI Subjects
+        tableHtml += `<tr><td colspan="2"><strong>[swAi]</strong></td></tr>`;
+        tableHtml += createEditableRow('인정과목', 'data.result.swAi.인정과목', data.result.swAi.인정과목.join(', '));
+        tableHtml += createEditableRow('영역대체과목', 'data.result.swAi.영역대체과목', data.result.swAi.영역대체과목.join(', '));
+        tableHtml += createEditableRow('필요학점', 'data.result.swAi.필요학점', data.result.swAi.필요학점);
+
+        // Creativity Subjects
+        tableHtml += `<tr><td colspan="2"><strong>[Creativity]</strong></td></tr>`;
+        tableHtml += createEditableRow('인정과목', 'data.result.creativity.인정과목', data.result.creativity.인정과목.join(', '));
+        tableHtml += createEditableRow('요구학점', 'data.result.creativity.요구학점', data.result.creativity.요구학점);
+
+        // Required Credits
+        tableHtml += `<tr><td colspan="2"><strong>[RequireCredits]</strong></td></tr>`;
+        tableHtml += createEditableRow('총 이수 학점', 'data.result.requiredCredit.총필요학점', data.result.requiredCredit.총필요학점);
+        tableHtml += createEditableRow('단일 전공', 'data.result.requiredCredit.단일전공_필요학점', data.result.requiredCredit.단일전공_필요학점);
+        tableHtml += createEditableRow('복수 연계 융합 전공', 'data.result.requiredCredit.복수_연계_융합_전공_필요학점', data.result.requiredCredit.복수_연계_융합_전공_필요학점);
+        tableHtml += createEditableRow('부전공', 'data.result.requiredCredit.부전공_필요학점', data.result.requiredCredit.부전공_필요학점);
+
+
+        tableHtml += `<tr><td colspan="2"><strong>[Subjects]</strong></td></tr>`;
+        tableHtml += createEditableRow('전공필수과목', 'data.result.majorRequired.과목코드', data.result.majorRequired.과목코드.join(', '));
+        tableHtml += createEditableRow('전공선택과목', 'data.result.majorSelect.과목코드', data.result.majorSelect.과목코드.join(', '));
+        tableHtml += createEditableRow('교양필수과목', 'data.result.generalRequired.과목코드', data.result.generalRequired.과목코드.join(', '));
+
+        // Alternative Courses
+        tableHtml += `<tr><td colspan="2"><strong>[AlternativeCourse]</strong></td></tr>`;
+        const alternativeCourses = data.result.alternativeCourse.대체과목코드 || {};
+        for (const [key, value] of Object.entries(alternativeCourses)) {
+            tableHtml += `<tr id="alt-course-${key}">
+            <td>기준 과목 코드: <input type="text" data-field="alternativeCourse.alternativeCourseMapKey.${key}" value="${key}" onchange="updateKey(this, '${key}')"></td>
+            <td>대체 과목 코드: <input type="text" data-field="alternativeCourse.alternativeCourseMap.${key}" value="${value.join(', ')}"></td>
+            <td>
+                <button type="button" onclick="removeAlternativeCourse('${key}')">-</button>
+            </td>
+        </tr>`;
+        }
+
+        // New alternative course input row
+        tableHtml += `<tr id="new-alternative-row">
+        <td><input type="text" id="newAltCourseKey" placeholder="새로운 기준 과목코드"></td>
+        <td><input type="text" id="newAltCourseValue" placeholder="대체 과목 코드"></td>
+        <td>
+            <button type="button" onclick="addAlternativeCourse()">+</button>
+        </td>
+    </tr>`;
+
+        tableHtml += `</table><br><button type="button" onclick="saveChanges(event)">변경사항 저장하기</button>`;
+        tableHtml += `<button type="button" onclick="deleteCurriculum()">해당 커리큘럼 삭제하기</button>`;
+
+        return tableHtml;
+    }
+
+    function createEditableRow(label, field, value, isReadOnly = false, type = 'text', isEdit=true) {
+        if (type === 'boolean') {
+            return `<tr>
+                    <td>${label}</td>
+                    <td><input type="checkbox" data-field="${field}" ${value ? 'checked' : ''}></td>
+                </tr>`;
+        } else if (Array.isArray(value)) {
+            return `<tr>
+                    <td>${label}</td>
+                    <td><input type="text" data-field="${field}" value="${value.join(', ')}"></td>
+                </tr>`;
+        } else if (typeof value === 'object') {
+            return `<tr>
+                    <td>${label}</td>
+                    <td><input type="text" data-field="${field}" value='${JSON.stringify(value)}'></td>
+                </tr>`;
+        } else {
+            return `<tr>
+                    <td>${label}</td>
+                    <td><input type="text" data-field="${field}" value="${value}" ${isReadOnly ? 'readonly' : ''}></td>
+                </tr>`;
+        }
+
+    }
+
+
+    // 대체 과목 추가
+    function addAlternativeCourse() {
+        const key = document.getElementById('newAltCourseKey').value.trim();
+        const value = document.getElementById('newAltCourseValue').value.trim();
+
+        if (!key || !value) {
+            alert("기준 과목코드와 대체과목 코드를 모두 입력해 주세요.");
+            return;
+        }
+
+        if (confirm("해당 대체 과목을 추가하시겠습니까?")) {
+            const newRow = `<tr id="alt-course-${key}">
+                        <td>기준 과목 코드: <input type="text" data-field="alternativeCourse.alternativeCourseMapKey.${key}" value="${key}" onchange="updateKey(this, '${key}')"></td>
+                        <td>대체 과목 코드: <input type="text" data-field="alternativeCourse.alternativeCourseMap.${key}" value="${value}"></td>
+                        <td>
+                            <button type="button" onclick="removeAlternativeCourse('${key}')">-</button>
+                        </td>
+                      </tr>`;
+
+            document.getElementById('new-alternative-row').insertAdjacentHTML('beforebegin', newRow);
+
+            document.getElementById('newAltCourseKey').value = '';
+            document.getElementById('newAltCourseValue').value = '';
+        }
+    }
+
+    //대체 과목 제거
+    function removeAlternativeCourse(key) {
+        if (confirm("해당 대체 과목을 삭제하시겠습니까?")) {
+            const row = document.getElementById(`alt-course-${key}`);
+            if (row) {
+                row.parentNode.removeChild(row);
+            }
+        }
+    }
+    // key 값을 지정해 요소 컨트롤
+    function updateKey(inputElement, oldKey) {
+        const newKey = inputElement.value.trim();
+        if (newKey !== oldKey) {
+            const row = document.getElementById(`alt-course-${oldKey}`);
+            row.id = `alt-course-${newKey}`;
+            const altCourseInput = row.querySelector(`[data-field="alternativeCourse.alternativeCourseMap.${oldKey}"]`);
+            if (altCourseInput) {
+                altCourseInput.setAttribute('data-field', `alternativeCourse.alternativeCourseMap.${newKey}`);
+            }
+        }
+    }
+
+    function saveCurriculum() {
+        const majorType = document.getElementById('newMajorType').value;
+        const departmentName = document.getElementById('newDepartmentName').value;
+        const joinYear = document.getElementById('newJoinYear').value;
+        const curriculumData = document.getElementById('curriculumData').value;
+
+        if (majorType && departmentName && joinYear && curriculumData) {
+            try {
+                fetch(`/admin/curriculum/save?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: curriculumData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.result);
+                    })
+                    .catch(error => console.error('Error:', error));
+
+            } catch (error) {
+                alert('올바른 JSON 형식이 아닙니다.');
+            }
+        } else {
+            alert('모든 영역을 채우세요.');
+        }
+    }
+
+
+    function loadJsonFile() {
+        const fileInput = document.getElementById('jsonFile');
+        const file = fileInput.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                try {
+                    const jsonData = JSON.parse(event.target.result);  // 파일 내용을 JSON으로 파싱
+                    document.getElementById('curriculumData').value = JSON.stringify(jsonData, null, 2);  // 포맷된 JSON 데이터를 텍스트 영역에 표시
+                } catch (e) {
+                    alert('업로드된 파일이 올바른 JSON 형식이 아닙니다.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    }
+
+    function loadJsonCrawler() {
+        const departmentName = document.getElementById('newDepartmentName').value;
+        const joinYear = document.getElementById('newJoinYear').value;
+
+        if (departmentName && joinYear) {
+            // 람다 url 주소 뺐음, 나중에 yml 에 등록후 갱신 하겠음
+            fetch(`${departmentName}&joinYear=${joinYear}`, {
+                method: 'GET',
+                headers: {
+                    // 'Content-Type': 'application/json', // GET 요청에 Content-Type 필요 없음
+                    'Origin' : 'http://localhost:8080/',
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('curriculumData').value = JSON.stringify(data, null, 2);
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            alert('모든 필수 항목을 채워주세요.');
+        }
+    }
+    function saveChanges(event) {
+        event.preventDefault();  // 기본 동작 중단
+        const majorType = document.getElementById('majorType').value;
+        const departmentName = document.getElementById('departmentName').value;
+        const joinYear = document.getElementById('joinYear').value;
+
+
+        const inputs = document.querySelectorAll('#curriculum-result input[data-field]');
+        let updatedData = {};
+
+        inputs.forEach(input => {
+            const field = input.getAttribute('data-field').split('.');
+            let currentObj = updatedData;
+
+            for (let i = 0; i < field.length - 1; i++) {
+                if (field[i] === 'data' || field[i] === 'result') continue;
+                if (!currentObj[field[i]]) {
+                    currentObj[field[i]] = {};
+                }
+                currentObj = currentObj[field[i]];
+            }
+
+            let value = input.type === 'checkbox' ? input.checked : input.value;
+            const fieldName = field[field.length - 1];
+            if (fieldName === '필수영역' || fieldName === '인정과목' || fieldName === '과목코드' || fieldName === '필수영역' || fieldName === '지정과목' || fieldName === '인정과목'|| fieldName === '영역대체과목') {
+                value = value ? value.split(',').map(item => item.trim()) : [];
+            }
+
+                currentObj[fieldName] = value; // 그 외의 필드는 기존 로직 유지
+
+        });
+        let 영역별대체과목코드 = {};
+        document.querySelectorAll('[data-field^="data.result.core.영역별_대체과목."]').forEach(input => {
+            // 필드명에서 카테고리(키)를 추출
+            const categoryKey = input.getAttribute('data-field').split('.').pop(); // 가장 마지막 요소로 카테고리 추출
+
+            // 입력값을 배열로 변환
+            const courseValues = input.value.split(',').map(item => item.trim());
+
+            // 빈 입력은 빈 배열로 처리
+            영역별대체과목코드[categoryKey] = courseValues.length === 1 && courseValues[0] === ""
+                ? []
+                : courseValues;
+        });
+        let 영역별지정과목코드 = {};
+        document.querySelectorAll('[data-field^="data.result.core.영역별_지정과목."]').forEach(input => {
+            // 필드명에서 카테고리(키)를 추출
+            const categoryKey = input.getAttribute('data-field').split('.').pop(); // 가장 마지막 요소로 카테고리 추출
+
+            // 입력값을 배열로 변환
+            const courseValues = input.value.split(',').map(item => item.trim());
+
+            // 빈 입력은 빈 배열로 처리
+            영역별지정과목코드[categoryKey] = courseValues.length === 1 && courseValues[0] === ""
+                ? []
+                : courseValues;
+        });
+
+// alternativeCourseJson.alternativeCourseMap 처리
+        let 대체과목코드 = {};
+        let count = 0;
+        document.querySelectorAll('[data-field^="alternativeCourse.alternativeCourseMap"]').forEach(input => {
+            // 필드명에서 과목 코드(키)를 추출
+            const courseKey = input.getAttribute('data-field').split('.').pop();  // 가장 마지막 요소로 과목 코드 추출
+
+            // 입력값을 배열로 변환
+            const courseValues = input.value.split(',').map(item => item.trim());
+
+            // alternativeCourseMap 객체에 키-값 쌍을 추가
+            if (courseKey) {
+                대체과목코드[courseKey] = courseValues.length === 1 && courseValues[0] === ""
+                    ? []  // 빈 입력은 빈 배열로 처리
+                    : courseValues;
+                if (courseValues.length === 1 && courseValues[0] === "") {
+                    count++; // 빈값일 경우 카운트 증가
+                }
+            }
+        });
+
+        if (count > 0) {
+            alert(`대체과목 코드 중 ${count}개의 값이 비어 있습니다. 빈 값을 채워주세요.`);
+            return; // POST 요청을 보내지 않음
+        }
+
+        if (!updatedData.alternativeCourse) {
+            updatedData.alternativeCourse = {};
+        }
+        updatedData.alternativeCourse.대체과목코드 = 대체과목코드;
+        updatedData.core.영역별_지정과목 = 영역별지정과목코드;
+        updatedData.core.영역별_대체과목 = 영역별대체과목코드;
+
+        console.log('Updated Data:', JSON.stringify(updatedData, null, 2));
+
+        fetch(`/admin/curriculum/save?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData)
+        })
+            .then(response => response.text())
+            .then(result => {
+
+                    if (confirm("같은 데이터가 이미 존재합니다. 덮어씌우시겠습니까?")) {
+                        fetch(`/admin/curriculum/update?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(updatedData)
+                        })
+                            .then(overwriteResponse => overwriteResponse.text())
+                            .then(overwriteResult => {
+                                alert(overwriteResult);
+                            });
+                    }
+                 else if (result === "not_found") {
+                    alert("데이터가 존재하지 않습니다. 커리큘럼 데이터 저장 화면을 이용하세요.");
+                } else {
+                    alert('취소했습니다');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+        function deleteCurriculum() {
+        const majorType = document.getElementById('majorType').value;
+        const departmentName = document.getElementById('departmentName').value;
+        const joinYear = document.getElementById('joinYear').value;
+
+        if (majorType && departmentName && joinYear) {
+            if (confirm("정말로 이 커리큘럼을 삭제하시겠습니까?")) {
+                fetch(`/admin/curriculum/delete?majorType=${majorType}&departmentName=${departmentName}&joinYear=${joinYear}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => response.text())
+                    .then(result => {
+                        alert(result);
+                        document.getElementById('curriculum-result').innerHTML = ''; // 삭제 후 화면 초기화
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        } else {
+            alert('전공 상태, 학과 이름, 그리고 기준 년도를 모두 입력해주세요.');
+        }
+    }
+</script>
+
+</body>
+</html>
