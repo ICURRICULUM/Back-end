@@ -31,6 +31,7 @@ public class Take extends BaseRDBEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "take_id")
+    @Getter
     private Long id;
 
     @Getter
@@ -39,6 +40,11 @@ public class Take extends BaseRDBEntity {
     private Category category;
 
     private String takenYear;
+
+
+    @Getter
+    @Column(nullable = false)
+    private Grade grade;
 
     private String takenSemester;
 
@@ -86,12 +92,24 @@ public class Take extends BaseRDBEntity {
         checkValidTake();
     }
 
+
+
     /*
      * [비즈니스 메소드]
      *
      * - checkValidTake
      * - getEffectiveCourse
      */
+
+
+    /*
+     *  Take 를 update 할때 사용
+     */
+    public void updateTakeInfo(Category category, MajorType majorType, Grade grade) {
+        this.category = category;
+        this.majorType = majorType;
+        this.grade = grade;
+    }
 
     /*
      * Course 또는 CustomCourse 중 하나만 채워져 있어야 한다.
