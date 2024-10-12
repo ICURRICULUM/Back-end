@@ -18,6 +18,10 @@ public enum ErrorStatus {
      */
     TAKE_HAS_ABNORMAL_COURSE(HttpStatus.BAD_REQUEST, "TAKE401",
         "Take에는 Course 또는 CustomCourse 중 하나만 채워져 있어야 한다"),
+    TAKE_CODE_DUPLICATE(HttpStatus.BAD_REQUEST, "TAKE402",
+        "Take에 이미 존재하는 수업입니다."),
+    TAKE_NOT_EXIST(HttpStatus.BAD_REQUEST, "TAKE403",
+        "Take에 존재하지 않는 수업입니다."),
 
     /*
      * memberMajor
